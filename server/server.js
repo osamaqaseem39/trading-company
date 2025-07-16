@@ -57,7 +57,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:3001', 
     'http://localhost:3000',
-    'https://punjabac-admin-4nq8.vercel.app',
+    'https://trading-company.vercel.app',
     
     'https://punjabac-admin.osamaqaseem.online',
     'https://punjabac.osamaqaseem.online',
