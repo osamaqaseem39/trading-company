@@ -1,0 +1,216 @@
+{
+  "info": {
+    "name": "Blog Manager API",
+    "description": "Collection for Blog Manager API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user"
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with existing user credentials"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/blogs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs"]
+            },
+            "description": "Get all blog posts"
+          }
+        },
+        {
+          "name": "Get Blog by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/blogs/id/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "id", "{{blog_id}}"]
+            },
+            "description": "Get a specific blog post by ID"
+          }
+        },
+        {
+          "name": "Get Blog by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_slug}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_slug}}"]
+            },
+            "description": "Get a specific blog post by slug"
+          }
+        },
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Sample Blog Post\",\n    \"content\": \"This is the content of the blog post.\",\n    \"tags\": [\"javascript\", \"nodejs\"],\n    \"status\": \"draft\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/blogs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs"]
+            },
+            "description": "Create a new blog post"
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Blog Post\",\n    \"content\": \"This is the updated content of the blog post.\",\n    \"tags\": [\"javascript\", \"nodejs\", \"express\"],\n    \"status\": \"published\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_id}}"]
+            },
+            "description": "Update an existing blog post"
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_id}}"]
+            },
+            "description": "Delete a blog post"
+          }
+        },
+        {
+          "name": "Verify Blog Exists",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Sample Blog Post\",\n    \"slug\": \"sample-blog-post\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/blogs/verify",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "verify"]
+            },
+            "description": "Check if a blog post exists by title or slug"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "blog_id",
+      "value": "blog_id_here",
+      "type": "string"
+    },
+    {
+      "key": "blog_slug",
+      "value": "blog-slug-here",
+      "type": "string"
+    }
+  ]
+} 

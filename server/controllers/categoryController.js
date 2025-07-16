@@ -1,0 +1,58 @@
+const Category = require('../models/Category');
+
+exports.createCategory = async (req, res) => {
+  try {
+    const data = req.body;
+    if (req.file) {
+      data.image = req.file.path;
+    }
+    const category = new Category(data);
+    await category.save();
+    res.status(201).json(category);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.getCategories = async (req, res) => {
+  try {
+    const categories = await Category.find().populate('parent').sort({ createdAt: -1 });
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getCategory = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id).populate('parent');
+    if (!category) return res.status(404).json({ error: 'Not found' });
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.updateCategory = async (req, res) => {
+  try {
+    const data = req.body;
+    if (req.file) {
+      data.image = req.file.path;
+    }
+    const category = await Category.findByIdAndUpdate(req.params.id, data, { new: true });
+    if (!category) return res.status(404).json({ error: 'Not found' });
+    res.json(category);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.deleteCategory = async (req, res) => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category) return res.status(404).json({ error: 'Not found' });
+    res.json({ message: 'Category deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}; 

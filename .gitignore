@@ -1,0 +1,31 @@
+# Node modules
+client/node_modules/
+server/node_modules/
+
+# Build output
+client/build/
+server/build/
+
+# Environment files
+.env
+server/.env
+client/.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Uploads and generated content
+server/uploads/
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log* 
