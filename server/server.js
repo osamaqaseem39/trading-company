@@ -58,7 +58,6 @@ app.use((req, res, next) => {
     'http://localhost:3001', 
     'http://localhost:3000',
     'https://trading-company.vercel.app',
-    
     'https://punjabac-admin.osamaqaseem.online',
     'https://punjabac.osamaqaseem.online',
     'https://www.punjabac.com'
