@@ -3,9 +3,8 @@ const Product = require('../models/Product');
 // Add a new product
 exports.addProduct = async (req, res) => {
   try {
-    const { title, description, featuredImage, gallery } = req.body;
-    // Always use featuredImage from req.body as a string
-    const product = new Product({ title, description, featuredImage: featuredImage || '', gallery: gallery || [] });
+    const { title, description, featuredImage, gallery, brand, category } = req.body;
+    const product = new Product({ title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: category || '' });
     await product.save();
     res.status(201).json(product);
   } catch (err) {
@@ -17,9 +16,8 @@ exports.addProduct = async (req, res) => {
 // Edit an existing product
 exports.editProduct = async (req, res) => {
   try {
-    const { title, description, featuredImage, gallery } = req.body;
-    // Always use featuredImage from req.body as a string
-    const updateData = { title, description, featuredImage: featuredImage || '', gallery: gallery || [] };
+    const { title, description, featuredImage, gallery, brand, category } = req.body;
+    const updateData = { title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: category || '' };
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
