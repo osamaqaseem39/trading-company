@@ -10,6 +10,23 @@ const initialState = {
 
 type BrandFormMode = 'add' | 'edit';
 
+async function uploadToCpanel(file: File): Promise<string> {
+  const formData = new FormData();
+  const ext = file.name.split('.').pop();
+  const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  formData.append('file', file, uniqueName);
+  const response = await fetch('https://punjabac.osamaqaseem.online/upload.php', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await response.json();
+  if (data.url) {
+    return data.url;
+  } else {
+    throw new Error(data.error || 'Upload failed');
+  }
+}
+
 const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -56,10 +73,14 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
     setLoading(true);
     setError('');
     try {
+      let imageUrl = '';
+      if (form.image) {
+        imageUrl = await uploadToCpanel(form.image);
+      }
       const formData = new FormData();
       formData.append('name', form.name);
       formData.append('description', form.description);
-      if (form.image) formData.append('image', form.image);
+      if (imageUrl) formData.append('image', imageUrl);
       if (isEdit && id) {
         await brandApi.update(id, formData);
       } else {
@@ -88,7 +109,7 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
             <textarea name="description" value={form.description} onChange={handleChange} className="w-full border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition" rows={3} placeholder="Enter brand description" />
           </div>
           <div>
-            <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Image</label>
+            <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Upload Image</label>
             <div className="flex items-center gap-6">
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition" />
               {preview && <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow" />}
