@@ -151,13 +151,13 @@ const ProductForm: React.FC = () => {
           </select>
         </div>
         <div>
-          <label className="block font-semibold mb-1">Categories</label>
-          <select name="categories" value={product.categories || []} onChange={e => setProduct({ ...product, categories: Array.from(e.target.selectedOptions, option => option.value) })} className="w-full border px-3 py-2 rounded" multiple required>
+          <label className="block font-semibold mb-1">Category</label>
+          <select name="category" value={product.category || ''} onChange={handleSelectChange} className="w-full border px-3 py-2 rounded" required>
+            <option value="">Select a category</option>
             {categories.map(c => (
               <option key={c._id} value={c._id}>{c.name}</option>
             ))}
           </select>
-          <small className="text-gray-500">Hold Ctrl (Windows) or Cmd (Mac) to select multiple categories.</small>
         </div>
         <div>
           <label className="block font-semibold mb-1">Featured Image</label>
