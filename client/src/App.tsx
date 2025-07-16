@@ -22,6 +22,9 @@ import SupplierList from './pages/Suppliers/SupplierList';
 import SupplierDetail from './pages/Suppliers/SupplierDetail';
 import BrandList from './pages/Brands/BrandList';
 import BrandForm from './pages/Brands/BrandForm';
+import CategoryList from './pages/Categories/CategoryList';
+import CategoryForm from './pages/Categories/CategoryForm';
+
 
 export default function App() {
   return (
@@ -65,6 +68,11 @@ export default function App() {
             <Route path="/brands" element={<BrandList />} />
             <Route path="/brands/add" element={<BrandForm mode='add' />} />
             <Route path="/brands/:id/edit" element={<BrandForm mode='edit' />} />
+
+            {/* Category Routes */}
+            <Route path="/categories" element={<CategoryList />} />
+            <Route path="/categories/add" element={<CategoryForm mode='add' />} />
+            <Route path="/categories/:id/edit" element={<CategoryForm mode='edit' />} />
 
             <Route path="/messages" element={<MessageList/>}/>
           </Route>
