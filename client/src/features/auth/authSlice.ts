@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const BASE_URL = 'https://punjabac-admin.vercel.app';
+const BASE_URL = 'https://trading-company-bcyf.vercel.app';
 
 interface AuthState {
   user: any;

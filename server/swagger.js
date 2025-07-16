@@ -13,7 +13,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://punjabac-admin.vercel.app',
+        url: 'https://trading-company-bcyf.vercel.app',
         description: 'Production Server',
       },
       {
