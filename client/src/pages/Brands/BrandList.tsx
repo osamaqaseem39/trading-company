@@ -44,7 +44,7 @@ const BrandList: React.FC = () => {
                 {brands.map((b) => (
                   <tr key={b._id} className="border-t">
                     <td className="px-4 py-2 border">
-                      {b.image && <img src={`/${b.image.replace('uploads', 'uploads')}`} alt={b.name} className="w-16 h-16 object-cover rounded" />}
+                      {b.image && <img src={`${b.image.replace('uploads', 'uploads')}`} alt={b.name} className="w-16 h-16 object-cover rounded" />}
                     </td>
                     <td className="px-4 py-2 border font-medium">{b.name}</td>
                     <td className="px-4 py-2 border">{b.description}</td>
