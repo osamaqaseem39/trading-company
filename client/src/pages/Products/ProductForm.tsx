@@ -32,6 +32,7 @@ const ProductForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -57,6 +58,7 @@ const ProductForm: React.FC = () => {
   useEffect(() => {
     brandApi.getAll().then(res => setBrands(res.data)).catch(() => setBrands([]));
     categoryApi.getAll().then(res => setCategories(res.data)).catch(() => setCategories([]));
+    productApi.getAll().then(res => setAllProducts(res.data)).catch(() => setAllProducts([]));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

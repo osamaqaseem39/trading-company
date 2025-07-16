@@ -103,6 +103,7 @@ export interface Product {
   gallery?: string[];
   brand?: string;
   categories?: string[];
+  relatedProduct?: string;
 }
 
 export interface CreateProductInput {
@@ -112,6 +113,7 @@ export interface CreateProductInput {
   gallery?: File[];
   brand?: string;
   categories?: string[];
+  relatedProduct?: string;
 }
 
 export interface UpdateProductInput {
@@ -121,6 +123,7 @@ export interface UpdateProductInput {
   gallery?: File[];
   brand?: string;
   categories?: string[];
+  relatedProduct?: string;
 }
 
 export const productApi = {
