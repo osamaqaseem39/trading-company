@@ -1,10 +1,19 @@
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 // Add a new product
 exports.addProduct = async (req, res) => {
   try {
     const { title, description, featuredImage, gallery, brand, category } = req.body;
-    const product = new Product({ title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: category || '' });
+    let mainCategory = category;
+    let subCategory = '';
+    // Check if the selected category has a parent
+    const catDoc = await Category.findById(category);
+    if (catDoc && catDoc.parent) {
+      mainCategory = catDoc.parent.toString();
+      subCategory = category;
+    }
+    const product = new Product({ title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: mainCategory || '', subCategory });
     await product.save();
     res.status(201).json(product);
   } catch (err) {
@@ -17,7 +26,14 @@ exports.addProduct = async (req, res) => {
 exports.editProduct = async (req, res) => {
   try {
     const { title, description, featuredImage, gallery, brand, category } = req.body;
-    const updateData = { title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: category || '' };
+    let mainCategory = category;
+    let subCategory = '';
+    const catDoc = await Category.findById(category);
+    if (catDoc && catDoc.parent) {
+      mainCategory = catDoc.parent.toString();
+      subCategory = category;
+    }
+    const updateData = { title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: mainCategory || '', subCategory };
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);

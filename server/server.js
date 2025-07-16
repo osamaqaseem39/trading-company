@@ -29,8 +29,8 @@ app.use(cors({
     'https://trading-company.vercel.app',
     'https://server.wingzimpex.com',
     
-    'https://punjabac-admin.osamaqaseem.online',
-    'https://www.punjabac.com'
+    'https://wingzimpex-admin.osamaqaseem.online',
+    'https://www.wingzimpex.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -58,9 +58,9 @@ app.use((req, res, next) => {
     'http://localhost:3001', 
     'http://localhost:3000',
     'https://trading-company.vercel.app',
-    'https://punjabac-admin.osamaqaseem.online',
+    'https://wingzimpex-admin.osamaqaseem.online',
     'https://server.wingzimpex.com',
-    'https://www.punjabac.com'
+    'https://www.wingzimpex.com'
   ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {

@@ -81,7 +81,17 @@ const ProductForm: React.FC = () => {
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setProduct({ ...product, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'category') {
+      const selectedCat = categories.find(c => c._id === value);
+      if (selectedCat && selectedCat.parent) {
+        setProduct({ ...product, category: selectedCat.parent as string, subCategory: value });
+      } else {
+        setProduct({ ...product, category: value, subCategory: '' });
+      }
+    } else {
+      setProduct({ ...product, [name]: value });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,6 +116,7 @@ const ProductForm: React.FC = () => {
         ...product,
         featuredImage: featuredImageUrl || '',
         gallery: galleryUrls.length > 0 ? galleryUrls : [],
+        subCategory: product.subCategory || '',
       };
       // Debug log
       console.log('Submitting product:', payload);

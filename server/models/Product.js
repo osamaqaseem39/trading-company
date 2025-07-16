@@ -24,6 +24,10 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     default: ''
+  },
+  subCategory: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true
