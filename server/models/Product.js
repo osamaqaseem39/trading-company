@@ -16,7 +16,15 @@ const productSchema = new mongoose.Schema({
   },
   gallery: [{
     type: String
-  }]
+  }],
+  brand: {
+    type: String,
+    default: ''
+  },
+  category: {
+    type: String,
+    default: ''
+  }
 }, {
   timestamps: true
 });
