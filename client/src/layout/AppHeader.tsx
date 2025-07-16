@@ -86,12 +86,12 @@ const AppHeader: React.FC = () => {
             <img
               className="dark:hidden"
               src="./images/logo/logo.png"
-              alt="Logo"
+              alt="Wingz Impex Logo"
             />
             <img
               className="hidden dark:block"
               src="./images/logo/logo.png"
-              alt="Logo"
+              alt="Wingz Impex Logo"
             />
           </Link>
 

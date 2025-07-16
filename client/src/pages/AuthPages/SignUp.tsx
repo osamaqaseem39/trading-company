@@ -352,7 +352,7 @@ export default function SignUp() {
           {/* <!-- ===== Common Grid Shape End ===== --> */}
           <div className="flex flex-col items-center max-w-xs">
             <Link to="index.html" className="block mb-4">
-              <img src="/images/logo/logo.png" alt="Logo" />
+              <img src="/images/logo/logo.png" alt="Wingz Impex Logo" />
             </Link>
             <p className="text-center text-gray-400 dark:text-white/60">
               Free and Open-Source Tailwind CSS Admin Dashboard Template

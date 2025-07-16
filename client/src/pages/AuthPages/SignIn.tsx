@@ -187,12 +187,12 @@ export default function SignIn() {
             <Link to="/" className="block mb-4">
               <img
                 src="/images/logo/logo.png"
-                alt="Logo"
+                alt="Wingz Impex Logo"
                 className="dark:hidden"
               />
               <img
                 src="/images/logo/logo.png"
-                alt="Logo"
+                alt="Wingz Impex Logo"
                 className="hidden dark:block"
               />
             </Link>
@@ -202,7 +202,7 @@ export default function SignIn() {
               className="mb-8"
             />
             <h2 className="mb-3 text-2xl font-semibold text-white dark:text-gray-900">
-              Welcome to TailAdmin
+              Welcome to Wingz Impex
             </h2>
             <p className="text-base text-center text-white/70 dark:text-gray-600">
               The most powerful admin template using React.js and Tailwind CSS
