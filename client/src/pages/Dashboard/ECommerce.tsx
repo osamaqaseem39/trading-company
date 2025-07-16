@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { productApi, blogApi, serviceApi, quoteApi, Product, Blog, Service, Quote } from '../../services/api';
 import PageMeta from "../../components/common/PageMeta";
+import ProductList from '../Products/ProductList';
 
 export default function Ecommerce() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -146,6 +147,10 @@ export default function Ecommerce() {
                 </tbody>
               </table>
             </div>
+          </div>
+          {/* Full Product List at the end */}
+          <div className="mt-16">
+            <ProductList />
           </div>
         </>
       )}

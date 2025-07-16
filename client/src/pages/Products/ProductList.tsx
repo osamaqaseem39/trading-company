@@ -33,33 +33,41 @@ const ProductList: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
-        <Link to="/products/add" className="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 transition">Add Product</Link>
+    <div className="max-w-4xl mx-auto py-10">
+      <h1 className="text-4xl font-bold text-center mb-10 text-gray-800 dark:text-white">Products</h1>
+      <div className="flex justify-end mb-6">
+        <Link to="/products/add" className="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 transition">Add Product</Link>
       </div>
       {loading ? (
         <div className="flex justify-center items-center h-64">Loading...</div>
       ) : (
         Array.isArray(products) && products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-900 rounded-2xl shadow-lg">
             {products.map(product => (
-              <div key={product._id} className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-4 flex flex-col hover:shadow-2xl transition-shadow">
-                {product.featuredImage && (
-                  <img
-                    src={product.featuredImage.replace('server/', '')}
-                    alt={product.title}
-                    className="h-48 w-full object-cover mb-3 rounded-lg cursor-pointer transition-transform hover:scale-105"
-                    onClick={() => openModal(product.featuredImage!)}
-                  />
-                )}
-                <h2 className="text-xl font-semibold mb-1 text-gray-800 dark:text-gray-200">{product.title}</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{product.description}</p>
-                <div className="mt-auto flex gap-2">
-                  <Link to={`/products/${product._id}`} className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition">View</Link>
-                  <Link to={`/products/${product._id}/edit`} className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition">Edit</Link>
-                  <button onClick={() => handleDelete(product._id)} className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition">Delete</button>
+              <div key={product._id} className="flex items-center px-8 py-6 group hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                <div className="flex-shrink-0">
+                  {product.featuredImage ? (
+                    <img
+                      src={product.featuredImage.replace('server/', '')}
+                      alt={product.title}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100"
+                      onClick={() => openModal(product.featuredImage!)}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-2xl text-gray-400">
+                      <span>📦</span>
+                    </div>
+                  )}
                 </div>
+                <div className="ml-6 flex-1">
+                  <div className="text-xl font-semibold text-gray-800 dark:text-gray-200 group-hover:text-brand-600 transition">{product.title}</div>
+                  <div className="text-gray-500 dark:text-gray-400 text-base mt-1 line-clamp-1">{product.description}</div>
+                </div>
+                <Link to={`/products/${product._id}`} className="ml-auto flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-brand-100 hover:text-brand-700 transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </div>
             ))}
           </div>
