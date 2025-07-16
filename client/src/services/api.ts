@@ -101,6 +101,8 @@ export interface Product {
   description: string;
   featuredImage?: string;
   gallery?: string[];
+  brand?: string;
+  categories?: string[];
 }
 
 export interface CreateProductInput {
@@ -108,6 +110,8 @@ export interface CreateProductInput {
   description: string;
   featuredImage?: File;
   gallery?: File[];
+  brand?: string;
+  categories?: string[];
 }
 
 export interface UpdateProductInput {
@@ -115,6 +119,8 @@ export interface UpdateProductInput {
   description?: string;
   featuredImage?: File;
   gallery?: File[];
+  brand?: string;
+  categories?: string[];
 }
 
 export const productApi = {

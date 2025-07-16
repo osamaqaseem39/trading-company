@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { productApi, Product } from '../../services/api';
+import { productApi, Product, brandApi, Brand, categoryApi, Category } from '../../services/api';
 
 // Upload a file to cPanel server and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
@@ -30,6 +30,8 @@ const ProductForm: React.FC = () => {
   const [previewGallery, setPreviewGallery] = useState<string[]>([]);
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -52,6 +54,11 @@ const ProductForm: React.FC = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    brandApi.getAll().then(res => setBrands(res.data)).catch(() => setBrands([]));
+    categoryApi.getAll().then(res => setCategories(res.data)).catch(() => setCategories([]));
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   };
@@ -69,6 +76,10 @@ const ProductForm: React.FC = () => {
       setGalleryFiles(files);
       setPreviewGallery(files.map(file => URL.createObjectURL(file)));
     }
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProduct({ ...product, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,6 +138,24 @@ const ProductForm: React.FC = () => {
         <div>
           <label className="block font-semibold mb-1">Description</label>
           <textarea name="description" value={product.description as string} onChange={handleChange} className="w-full border px-3 py-2 rounded" required />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Brand</label>
+          <select name="brand" value={product.brand || ''} onChange={handleSelectChange} className="w-full border px-3 py-2 rounded" required>
+            <option value="">Select a brand</option>
+            {brands.map(b => (
+              <option key={b._id} value={b._id}>{b.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Categories</label>
+          <select name="categories" value={product.categories || []} onChange={e => setProduct({ ...product, categories: Array.from(e.target.selectedOptions, option => option.value) })} className="w-full border px-3 py-2 rounded" multiple required>
+            {categories.map(c => (
+              <option key={c._id} value={c._id}>{c.name}</option>
+            ))}
+          </select>
+          <small className="text-gray-500">Hold Ctrl (Windows) or Cmd (Mac) to select multiple categories.</small>
         </div>
         <div>
           <label className="block font-semibold mb-1">Featured Image</label>
