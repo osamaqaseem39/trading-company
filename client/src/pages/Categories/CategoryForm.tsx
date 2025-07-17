@@ -11,39 +11,6 @@ const initialState = {
 
 type CategoryFormMode = 'add' | 'edit';
 
-async function uploadToCpanel(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    const ext = file.name.split('.').pop();
-    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    formData.append('file', file, uniqueName);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://server.wingzimpex.com/upload.php');
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        // Use a callback to update progress from inside the component
-        if (typeof window !== 'undefined' && window.setUploadProgress) {
-          window.setUploadProgress(Math.round((event.loaded / event.total) * 100));
-        }
-      }
-    };
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        const data = JSON.parse(xhr.responseText);
-        if (data.url) {
-          resolve(data.url);
-        } else {
-          reject(new Error(data.error || 'Upload failed'));
-        }
-      } else {
-        reject(new Error('Upload failed'));
-      }
-    };
-    xhr.onerror = () => reject(new Error('Upload failed'));
-    xhr.send(formData);
-  });
-}
-
 const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -89,8 +56,6 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
       setPreview(URL.createObjectURL(file));
       setUploading(true);
       setUploadProgress(0);
-      // Attach setUploadProgress to window for use in uploadToCpanel
-      (window as any).setUploadProgress = setUploadProgress;
       try {
         const imageUrl = await uploadToCpanel(file);
         setForm(prev => ({ ...prev, image: imageUrl }));
@@ -99,8 +64,6 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
       } finally {
         setUploading(false);
         setUploadProgress(0);
-        // Clean up
-        delete (window as any).setUploadProgress;
       }
     }
   };
@@ -135,6 +98,37 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Move uploadToCpanel inside the component to access setUploadProgress
+  const uploadToCpanel = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      const ext = file.name.split('.').pop();
+      const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      formData.append('file', file, uniqueName);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://server.wingzimpex.com/upload.php');
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      };
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          if (data.url) {
+            resolve(data.url);
+          } else {
+            reject(new Error(data.error || 'Upload failed'));
+          }
+        } else {
+          reject(new Error('Upload failed'));
+        }
+      };
+      xhr.onerror = () => reject(new Error('Upload failed'));
+      xhr.send(formData);
+    });
   };
 
   return (
