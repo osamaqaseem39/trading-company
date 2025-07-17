@@ -55,4 +55,27 @@ exports.deleteCategory = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+// Get categories as nested (parent/children) structure
+exports.getNestedCategories = async (req, res) => {
+  try {
+    const categories = await Category.find().lean();
+    // Build a map for quick lookup
+    const categoryMap = {};
+    categories.forEach(cat => {
+      categoryMap[cat._id] = { ...cat, children: [] };
+    });
+    // Assign children to their parent
+    categories.forEach(cat => {
+      if (cat.parent && categoryMap[cat.parent]) {
+        categoryMap[cat.parent].children.push(categoryMap[cat._id]);
+      }
+    });
+    // Only top-level categories (no parent)
+    const nested = Object.values(categoryMap).filter(cat => !cat.parent);
+    res.json(nested);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }; 

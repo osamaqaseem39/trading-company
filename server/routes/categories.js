@@ -13,5 +13,7 @@ router.get('/:id', categoryController.getCategory);
 router.put('/:id', upload.single('image'), categoryController.updateCategory);
 // DELETE /api/categories/:id
 router.delete('/:id', categoryController.deleteCategory);
+// GET /api/categories/nested
+router.get('/nested', categoryController.getNestedCategories);
 
 module.exports = router; 

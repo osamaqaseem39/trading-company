@@ -10,7 +10,6 @@ const swaggerSpecs = require('./swagger');
 const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blogs');
 const productRoutes = require('./routes/products');
-const serviceRoutes = require('./routes/services');
 const quotesRouter = require('./routes/quotes');
 const supplierRoutes = require('./routes/suppliers');
 const brandRoutes = require('./routes/brands');
@@ -179,7 +178,6 @@ mongoose.connection.on('disconnected', () => {
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/services', serviceRoutes);
 app.use('/api/quotes', quotesRouter);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/brands', brandRoutes);
