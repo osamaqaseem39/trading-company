@@ -59,7 +59,8 @@ app.use((req, res, next) => {
     'https://trading-company.vercel.app',
     'https://wingzimpex-admin.osamaqaseem.online',
     'https://server.wingzimpex.com',
-    'https://www.wingzimpex.com'
+    'https://wingzimpex.com'
+    
   ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
