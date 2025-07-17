@@ -2,6 +2,8 @@ const Category = require('../models/Category');
 
 exports.createCategory = async (req, res) => {
   try {
+    console.log('Uploaded file:', req.file); // Debug log
+    console.log('Request body:', req.body); // Debug log
     const data = req.body;
     if (req.file) {
       data.image = req.file.path;
