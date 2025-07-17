@@ -23,13 +23,12 @@ const app = express();
 // Middleware - CORS must be first!
 app.use(cors({
   origin: [
-    'http://localhost:3001', 
+'http://localhost:3001', 
     'http://localhost:3000',
     'https://trading-company.vercel.app',
     'https://server.wingzimpex.com',
-    
-    'https://wingzimpex-admin.osamaqaseem.online',
-    'https://www.wingzimpex.com'
+    'https://server.wingzimpex.com',
+    'https://wingzimpex.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -57,7 +56,7 @@ app.use((req, res, next) => {
     'http://localhost:3001', 
     'http://localhost:3000',
     'https://trading-company.vercel.app',
-    'https://wingzimpex-admin.osamaqaseem.online',
+    'https://server.wingzimpex.com',
     'https://server.wingzimpex.com',
     'https://wingzimpex.com'
     
