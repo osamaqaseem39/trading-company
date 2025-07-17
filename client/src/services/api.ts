@@ -256,13 +256,13 @@ export interface Category {
 export const categoryApi = {
   getAll: () => axios.get<Category[]>(`${BASE_URL}/categories`),
   getById: (id: string) => axios.get<Category>(`${BASE_URL}/categories/${id}`),
-  create: (data: FormData) =>
+  create: (data: Partial<Category>) =>
     axios.post<Category>(`${BASE_URL}/categories`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'application/json' }
     }),
-  update: (id: string, data: FormData) =>
+  update: (id: string, data: Partial<Category>) =>
     axios.put<Category>(`${BASE_URL}/categories/${id}`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'application/json' }
     }),
   delete: (id: string) => axios.delete(`${BASE_URL}/categories/${id}`),
 };

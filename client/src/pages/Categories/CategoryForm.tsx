@@ -5,11 +5,28 @@ import { categoryApi, Category } from '../../services/api';
 const initialState = {
   name: '',
   description: '',
-  image: undefined as File | undefined,
+  image: '', // store image as string path
   parent: '',
 };
 
 type CategoryFormMode = 'add' | 'edit';
+
+async function uploadToCpanel(file: File): Promise<string> {
+  const formData = new FormData();
+  const ext = file.name.split('.').pop();
+  const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  formData.append('file', file, uniqueName);
+  const response = await fetch('https://server.wingzimpex.com/upload.php', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await response.json();
+  if (data.url) {
+    return data.url;
+  } else {
+    throw new Error(data.error || 'Upload failed');
+  }
+}
 
 const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +50,7 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
           setForm({
             name: res.data.name,
             description: res.data.description || '',
-            image: undefined,
+            image: res.data.image || '',
             parent: res.data.parent && typeof res.data.parent === 'object' ? (res.data.parent as Category)._id : (res.data.parent || ''),
           });
           setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : undefined);
@@ -48,11 +65,16 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setForm(prev => ({ ...prev, image: file }));
       setPreview(URL.createObjectURL(file));
+      try {
+        const imageUrl = await uploadToCpanel(file);
+        setForm(prev => ({ ...prev, image: imageUrl })); // Save the path, not the file
+      } catch (err) {
+        setError('Image upload failed');
+      }
     }
   };
 
@@ -61,15 +83,16 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     setLoading(true);
     setError('');
     try {
-      const formData = new FormData();
-      formData.append('name', form.name);
-      formData.append('description', form.description);
-      if (form.image) formData.append('image', form.image);
-      if (form.parent) formData.append('parent', form.parent);
+      const payload = {
+        name: form.name,
+        description: form.description,
+        image: form.image, // This is now a string path
+        parent: form.parent,
+      };
       if (isEdit && id) {
-        await categoryApi.update(id, formData);
+        await categoryApi.update(id, payload);
       } else {
-        await categoryApi.create(formData);
+        await categoryApi.create(payload);
       }
       navigate('/categories');
     } catch (err) {
