@@ -21,7 +21,10 @@ async function uploadToCpanel(file: File): Promise<string> {
     xhr.open('POST', 'https://server.wingzimpex.com/upload.php');
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
-        // setUploadProgress(Math.round((event.loaded / event.total) * 100)); // This line was removed from the new_code, so it's removed here.
+        // Use a callback to update progress from inside the component
+        if (typeof window !== 'undefined' && window.setUploadProgress) {
+          window.setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        }
       }
     };
     xhr.onload = () => {
@@ -86,14 +89,18 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
       setPreview(URL.createObjectURL(file));
       setUploading(true);
       setUploadProgress(0);
+      // Attach setUploadProgress to window for use in uploadToCpanel
+      (window as any).setUploadProgress = setUploadProgress;
       try {
         const imageUrl = await uploadToCpanel(file);
-        setForm(prev => ({ ...prev, image: imageUrl })); // Save the path, not the file
+        setForm(prev => ({ ...prev, image: imageUrl }));
       } catch (err) {
         setError('Image upload failed');
       } finally {
         setUploading(false);
         setUploadProgress(0);
+        // Clean up
+        delete (window as any).setUploadProgress;
       }
     }
   };
