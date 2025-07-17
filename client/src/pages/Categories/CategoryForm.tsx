@@ -83,12 +83,16 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     setLoading(true);
     setError('');
     try {
-      const payload = {
+      const payload: any = {
         name: form.name,
         description: form.description,
-        image: form.image, // This is now a string path
-        parent: form.parent,
+        image: form.image,
       };
+      if (form.parent) {
+        payload.parent = form.parent;
+      } else {
+        payload.parent = null;
+      }
       if (isEdit && id) {
         await categoryApi.update(id, payload);
       } else {
