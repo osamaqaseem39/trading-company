@@ -12,20 +12,33 @@ const initialState = {
 type CategoryFormMode = 'add' | 'edit';
 
 async function uploadToCpanel(file: File): Promise<string> {
-  const formData = new FormData();
-  const ext = file.name.split('.').pop();
-  const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-  formData.append('file', file, uniqueName);
-  const response = await fetch('https://server.wingzimpex.com/upload.php', {
-    method: 'POST',
-    body: formData,
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    const ext = file.name.split('.').pop();
+    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+    formData.append('file', file, uniqueName);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://server.wingzimpex.com/upload.php');
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        // setUploadProgress(Math.round((event.loaded / event.total) * 100)); // This line was removed from the new_code, so it's removed here.
+      }
+    };
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        if (data.url) {
+          resolve(data.url);
+        } else {
+          reject(new Error(data.error || 'Upload failed'));
+        }
+      } else {
+        reject(new Error('Upload failed'));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Upload failed'));
+    xhr.send(formData);
   });
-  const data = await response.json();
-  if (data.url) {
-    return data.url;
-  } else {
-    throw new Error(data.error || 'Upload failed');
-  }
 }
 
 const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
@@ -36,6 +49,8 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEdit = mode === 'edit' || !!id;
@@ -69,19 +84,28 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     const file = e.target.files?.[0];
     if (file) {
       setPreview(URL.createObjectURL(file));
+      setUploading(true);
+      setUploadProgress(0);
       try {
         const imageUrl = await uploadToCpanel(file);
         setForm(prev => ({ ...prev, image: imageUrl })); // Save the path, not the file
       } catch (err) {
         setError('Image upload failed');
+      } finally {
+        setUploading(false);
+        setUploadProgress(0);
       }
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    if (!form.image) {
+      setError('Please upload an image before submitting.');
+      return;
+    }
+    setLoading(true);
     try {
       const payload: any = {
         name: form.name,
@@ -134,9 +158,19 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
             <div className="flex items-center gap-6">
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition" />
               {preview && <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow" />}
+              {uploading && (
+                <div className="flex flex-col items-center ml-2">
+                  <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mb-1">
+                    <div className="h-full bg-brand-600 transition-all" style={{ width: `${uploadProgress}%` }} />
+                  </div>
+                  <span className="text-xs text-gray-500">Uploading {uploadProgress}%</span>
+                </div>
+              )}
             </div>
           </div>
-          <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Saving...' : isEdit ? 'Update Category' : 'Add Category'}</button>
+          <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading || uploading}>
+            {uploading ? 'Uploading Image...' : loading ? (isEdit ? 'Updating...' : 'Saving...') : (isEdit ? 'Update Category' : 'Add Category')}
+          </button>
         </form>
       </div>
     </div>
