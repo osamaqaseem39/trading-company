@@ -45,7 +45,7 @@ const CategoryList: React.FC = () => {
                 {categories.map((c) => (
                   <tr key={c._id} className="border-t">
                     <td className="px-4 py-2 border">
-                      {c.image && <img src={`/${c.image.replace('uploads', 'uploads')}`} alt={c.name} className="w-16 h-16 object-cover rounded" />}
+                      {c.image && <img src={`${c.image.replace('uploads', 'uploads')}`} alt={c.name} className="w-16 h-16 object-cover rounded" />}
                     </td>
                     <td className="px-4 py-2 border font-medium">{c.name}</td>
                     <td className="px-4 py-2 border">{c.description}</td>
