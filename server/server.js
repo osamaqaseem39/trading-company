@@ -25,7 +25,7 @@ const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3000',
   'https://trading-company.vercel.app',
-  'https://server.wingzimpex.com',
+  'https://admin.wingzimpex.com',
   'https://adminserver.wingzimpex.com',
   'https://admin.wingzimpex.com',
   'https://wingzimpex.com',
