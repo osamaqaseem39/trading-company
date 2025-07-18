@@ -51,7 +51,7 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
           setForm({
             name: res.data.name,
             description: res.data.description || '',
-            image: undefined,
+            image: null,
           });
           setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : null);
         })
@@ -79,8 +79,10 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
     setError('');
     try {
       let imageUrl = '';
-      if (form.image) {
+      if (form.image instanceof File) {
         imageUrl = await uploadToCpanel(form.image);
+      } else if (typeof form.image === 'string') {
+        imageUrl = form.image;
       }
       const formData = new FormData();
       formData.append('name', form.name);
