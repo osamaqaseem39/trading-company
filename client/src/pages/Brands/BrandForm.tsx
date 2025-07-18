@@ -6,7 +6,7 @@ import ImageUpload from '../../components/form/ImageUpload';
 const initialState = {
   name: '',
   description: '',
-  image: undefined as File | File[] | null | undefined,
+  image: null as string | File | null,
 };
 
 type BrandFormMode = 'add' | 'edit';
@@ -34,9 +34,9 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
   const [form, setForm] = useState<{
     name: string;
     description: string;
-    image: File | File[] | null | undefined;
+    image: string | File | null;
   }>(initialState);
-  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +53,7 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
             description: res.data.description || '',
             image: undefined,
           });
-          setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : undefined);
+          setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : null);
         })
         .catch(() => setError('Failed to load brand'))
         .finally(() => setLoading(false));
@@ -119,11 +119,12 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
               multiple={false}
               value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
               onChange={file => {
-                setForm(prev => ({ ...prev, image: Array.isArray(file) ? file[0] : file || undefined }));
-                setPreview(file ? URL.createObjectURL(Array.isArray(file) ? file[0] : file) : undefined);
+                const singleFile = Array.isArray(file) ? file[0] : file;
+                setForm(prev => ({ ...prev, image: singleFile || null }));
+                setPreview(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
               }}
             />
-            {preview && typeof form.image === 'string' && (
+            {form.image instanceof File && preview && (
               <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow mt-2" />
             )}
           </div>

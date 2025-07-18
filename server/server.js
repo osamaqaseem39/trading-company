@@ -32,7 +32,9 @@ app.use(cors({
    'https://admin.wingzimpex.com',
     'https://wingzimpex.com',
     'https://trading-company-website.vercel.app',
-    'https://www.wingzimpex.com'
+    'https://www.wingzimpex.com',
+    
+    'https://adminserver.wingzimpex.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -62,6 +64,8 @@ app.use((req, res, next) => {
     'https://trading-company.vercel.app',
     'https://server.wingzimpex.com',
     'https://server.wingzimpex.com',
+    'https://adminserver.wingzimpex.com',
+
     
    'https://admin.wingzimpex.com',
     'https://wingzimpex.com',

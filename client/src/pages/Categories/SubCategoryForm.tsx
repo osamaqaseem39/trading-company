@@ -6,7 +6,7 @@ import ImageUpload from '../../components/form/ImageUpload';
 const initialState = {
   name: '',
   description: '',
-  image: '' as string | File | null,
+  image: null as string | File | null,
   parent: '', // required for subcategory
 };
 
@@ -21,7 +21,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
     image: string | File | null;
     parent: string;
   }>(initialState);
-  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [allCategories, setAllCategories] = useState<Category[]>([]);
@@ -44,7 +44,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
             image: res.data.image || '',
             parent: res.data.parent && typeof res.data.parent === 'object' ? (res.data.parent as Category)._id : (res.data.parent || ''),
           });
-          setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : undefined);
+          setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : null);
         })
         .catch(() => setError('Failed to load subcategory'))
         .finally(() => setLoading(false));
@@ -166,11 +166,12 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
               multiple={false}
               value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
               onChange={file => {
-                setForm(prev => ({ ...prev, image: Array.isArray(file) ? (file[0] || null) : file }));
-                setPreview(file ? URL.createObjectURL(file as File) : undefined);
+                const singleFile = Array.isArray(file) ? file[0] : file;
+                setForm(prev => ({ ...prev, image: singleFile || null }));
+                setPreview(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
               }}
             />
-            {preview && typeof form.image === 'string' && (
+            {form.image instanceof File && preview && (
               <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow mt-2" />
             )}
           </div>

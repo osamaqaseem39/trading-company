@@ -285,8 +285,9 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
             multiple={false}
             value={featuredImageFile}
             onChange={file => {
-              setFeaturedImageFile(file as File | null);
-              setPreviewFeatured(file ? URL.createObjectURL(file as File) : null);
+              const singleFile = Array.isArray(file) ? file[0] : file;
+              setFeaturedImageFile(singleFile as File | null);
+              setPreviewFeatured(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
               setFormData(prev => ({ ...prev, featuredImage: '' }));
             }}
           />
