@@ -21,26 +21,33 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:3001',
+  'http://localhost:3000',
+  'https://trading-company.vercel.app',
+  'https://server.wingzimpex.com',
+  'https://adminserver.wingzimpex.com',
+  'https://admin.wingzimpex.com',
+  'https://wingzimpex.com',
+  'https://trading-company-website.vercel.app',
+  'https://www.wingzimpex.com'
+];
+
 // Middleware - CORS must be first!
 app.use(cors({
-  origin: [
-'http://localhost:3001', 
-    'http://localhost:3000',
-    'https://trading-company.vercel.app',
-    'https://server.wingzimpex.com',
-    'https://server.wingzimpex.com',
-   'https://admin.wingzimpex.com',
-    'https://wingzimpex.com',
-    'https://trading-company-website.vercel.app',
-    'https://www.wingzimpex.com',
-    
-    'https://adminserver.wingzimpex.com'
-  ],
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
+    'Content-Type',
+    'Authorization',
     'x-auth-token',
     'Access-Control-Allow-Headers',
     'Access-Control-Allow-Origin',
@@ -49,8 +56,8 @@ app.use(cors({
     'X-Requested-With'
   ],
   exposedHeaders: [
-    'Content-Type', 
-    'Authorization', 
+    'Content-Type',
+    'Authorization',
     'x-auth-token'
   ],
   optionsSuccessStatus: 200
@@ -58,20 +65,6 @@ app.use(cors({
 
 // Also add a pre-flight middleware to ensure headers are set
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    'http://localhost:3001', 
-    'http://localhost:3000',
-    'https://trading-company.vercel.app',
-    'https://server.wingzimpex.com',
-    'https://server.wingzimpex.com',
-    'https://adminserver.wingzimpex.com',
-
-    
-   'https://admin.wingzimpex.com',
-    'https://wingzimpex.com',
-    'https://trading-company-website.vercel.app',
-    'https://www.wingzimpex.com'
-  ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
