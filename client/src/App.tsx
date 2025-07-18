@@ -24,6 +24,7 @@ import BrandList from './pages/Brands/BrandList';
 import BrandForm from './pages/Brands/BrandForm';
 import CategoryList from './pages/Categories/CategoryList';
 import CategoryForm from './pages/Categories/CategoryForm';
+import SubCategoryForm from './pages/Categories/SubCategoryForm';
 
 
 export default function App() {
@@ -73,6 +74,10 @@ export default function App() {
             <Route path="/categories" element={<CategoryList />} />
             <Route path="/categories/add" element={<CategoryForm mode='add' />} />
             <Route path="/categories/:id/edit" element={<CategoryForm mode='edit' />} />
+
+            {/* Subcategory Routes */}
+            <Route path="/subcategories/add" element={<SubCategoryForm mode='add' />} />
+            <Route path="/subcategories/:id/edit" element={<SubCategoryForm mode='edit' />} />
 
             <Route path="/messages" element={<MessageList/>}/>
           </Route>
