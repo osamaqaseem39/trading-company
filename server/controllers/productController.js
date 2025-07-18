@@ -4,16 +4,17 @@ const Category = require('../models/Category');
 // Add a new product
 exports.addProduct = async (req, res) => {
   try {
-    const { title, description, featuredImage, gallery, brand, category } = req.body;
+    const { title, description, featuredImage, gallery, brand, category, subCategory } = req.body;
     let mainCategory = category;
-    let subCategory = '';
-    // Check if the selected category has a parent
-    const catDoc = await Category.findById(category);
-    if (catDoc && catDoc.parent) {
-      mainCategory = catDoc.parent.toString();
-      subCategory = category;
+    let subCat = subCategory || '';
+    // If subCategory is provided, set mainCategory to its parent
+    if (subCategory) {
+      const subCatDoc = await Category.findById(subCategory);
+      if (subCatDoc && subCatDoc.parent) {
+        mainCategory = subCatDoc.parent.toString();
+      }
     }
-    const product = new Product({ title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: mainCategory || '', subCategory });
+    const product = new Product({ title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: mainCategory || '', subCategory: subCat });
     await product.save();
     res.status(201).json(product);
   } catch (err) {
@@ -25,15 +26,16 @@ exports.addProduct = async (req, res) => {
 // Edit an existing product
 exports.editProduct = async (req, res) => {
   try {
-    const { title, description, featuredImage, gallery, brand, category } = req.body;
+    const { title, description, featuredImage, gallery, brand, category, subCategory } = req.body;
     let mainCategory = category;
-    let subCategory = '';
-    const catDoc = await Category.findById(category);
-    if (catDoc && catDoc.parent) {
-      mainCategory = catDoc.parent.toString();
-      subCategory = category;
+    let subCat = subCategory || '';
+    if (subCategory) {
+      const subCatDoc = await Category.findById(subCategory);
+      if (subCatDoc && subCatDoc.parent) {
+        mainCategory = subCatDoc.parent.toString();
+      }
     }
-    const updateData = { title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: mainCategory || '', subCategory };
+    const updateData = { title, description, featuredImage: featuredImage || '', gallery: gallery || [], brand: brand || '', category: mainCategory || '', subCategory: subCat };
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
