@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { serviceApi, Service, CreateServiceInput, UpdateServiceInput } from '../../services/api';
+import ImageUpload from '../../components/form/ImageUpload';
 
 // Upload a file to cPanel server and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
@@ -127,29 +128,16 @@ const ServiceForm: React.FC = () => {
           />
         </div>
         <div>
-          <label className="block mb-1 font-semibold">Featured Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFeaturedChange}
+          <ImageUpload
+            label="Featured Image"
+            multiple={false}
+            value={featuredImageFile}
+            onChange={file => {
+              setFeaturedImageFile(file as File | null);
+              setPreviewFeatured(file ? URL.createObjectURL(file as File) : null);
+              setForm({ ...form, featuredImage: '' });
+            }}
           />
-          {previewFeatured && (
-            <div className="relative inline-block">
-              <img src={previewFeatured} alt="Preview" className="h-32 mt-2 rounded" />
-              <button
-                type="button"
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                onClick={() => {
-                  setPreviewFeatured(null);
-                  setFeaturedImageFile(null);
-                  setForm({ ...form, featuredImage: '' });
-                }}
-                title="Remove image"
-              >
-                &times;
-              </button>
-            </div>
-          )}
           {!previewFeatured && form.featuredImage && (
             <div className="relative inline-block">
               <img src={form.featuredImage} alt="Current" className="h-32 mt-2 rounded" />

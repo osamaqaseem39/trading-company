@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { blogApi, CreateBlogInput } from '../../services/api';
+import ImageUpload from '../../components/form/ImageUpload';
 
 interface BlogFormProps {
   mode: 'add' | 'edit';
@@ -279,25 +280,16 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Featured Image</label>
-          <input type="file" accept="image/*" onChange={handleFeaturedChange} />
-          {previewFeatured && (
-            <div className="relative inline-block">
-              <img src={previewFeatured} alt="Preview" className="h-32 mt-2 rounded" />
-              <button
-                type="button"
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                onClick={() => {
-                  setPreviewFeatured(null);
-                  setFeaturedImageFile(null);
-                  setFormData(prev => ({ ...prev, featuredImage: '' }));
-                }}
-                title="Remove image"
-              >
-                &times;
-              </button>
-            </div>
-          )}
+          <ImageUpload
+            label="Featured Image"
+            multiple={false}
+            value={featuredImageFile}
+            onChange={file => {
+              setFeaturedImageFile(file as File | null);
+              setPreviewFeatured(file ? URL.createObjectURL(file as File) : null);
+              setFormData(prev => ({ ...prev, featuredImage: '' }));
+            }}
+          />
           {!previewFeatured && formData.featuredImage && (
             <div className="relative inline-block">
               <img src={formData.featuredImage} alt="Current" className="h-32 mt-2 rounded" />

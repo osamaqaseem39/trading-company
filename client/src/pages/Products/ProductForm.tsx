@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { productApi, Product, brandApi, Brand, categoryApi, Category, subcategoryApi, SubCategory } from '../../services/api';
+import imageCompression from 'browser-image-compression';
+import ImageUpload from '../../components/form/ImageUpload';
 
 // Upload a file to cPanel server and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
@@ -128,21 +130,6 @@ const ProductForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
-  };
-
-  const handleFeaturedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFeaturedImageFile(e.target.files[0]);
-      setPreviewFeatured(URL.createObjectURL(e.target.files[0]));
-    }
-  };
-
-  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setGalleryFiles(files);
-      setPreviewGallery(files.map(file => URL.createObjectURL(file)));
-    }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -293,77 +280,28 @@ const ProductForm: React.FC = () => {
             </div>
           )}
           <div>
-            <label className="block font-semibold mb-1">Featured Image</label>
-            <input type="file" accept="image/*" onChange={handleFeaturedChange} />
-            {previewFeatured && (
-              <div className="relative inline-block">
-                <img src={previewFeatured} alt="Preview" className="h-32 mt-2 rounded" />
-                <button
-                  type="button"
-                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                  onClick={() => {
-                    setPreviewFeatured(null);
-                    setFeaturedImageFile(null);
-                    setProduct({ ...product, featuredImage: '' });
-                  }}
-                  title="Remove image"
-                >
-                  &times;
-                </button>
-              </div>
-            )}
-            {!previewFeatured && product.featuredImage && (
-              <div className="relative inline-block">
-                <img src={product.featuredImage} alt="Current" className="h-32 mt-2 rounded" />
-                <button
-                  type="button"
-                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                  onClick={() => {
-                    setProduct({ ...product, featuredImage: '' });
-                  }}
-                  title="Remove image"
-                >
-                  &times;
-                </button>
-              </div>
-            )}
+            <ImageUpload
+              label="Featured Image"
+              multiple={false}
+              value={featuredImageFile}
+              onChange={file => {
+                setFeaturedImageFile(file as File | null);
+                setPreviewFeatured(file ? URL.createObjectURL(file as File) : null);
+                setProduct(prev => ({ ...prev, featuredImage: '' })); // Clear featuredImage string if new file selected
+              }}
+            />
           </div>
           <div>
-            <label className="block font-semibold mb-1">Gallery Images</label>
-            <input type="file" accept="image/*" multiple onChange={handleGalleryChange} />
-            <div className="flex gap-2 mt-2 flex-wrap">
-              {previewGallery.map((src, idx) => (
-                <div key={src} className="relative inline-block">
-                  <img src={src} alt="Gallery Preview" className="h-20 rounded" />
-                  <button
-                    type="button"
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                    onClick={() => {
-                      setPreviewGallery(previewGallery.filter((_, i) => i !== idx));
-                      setGalleryFiles(galleryFiles.filter((_, i) => i !== idx));
-                    }}
-                    title="Remove image"
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
-              {previewGallery.length === 0 && existingGallery.map((src, idx) => (
-                <div key={src} className="relative inline-block">
-                  <img src={src} alt="Existing Gallery" className="h-20 rounded" />
-                  <button
-                    type="button"
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                    onClick={() => {
-                      setExistingGallery(existingGallery.filter((_, i) => i !== idx));
-                    }}
-                    title="Remove image"
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
-            </div>
+            <ImageUpload
+              label="Gallery Images"
+              multiple={true}
+              value={galleryFiles}
+              onChange={files => {
+                setGalleryFiles(files as File[]);
+                setPreviewGallery(Array.isArray(files) ? files.map(file => URL.createObjectURL(file)) : []);
+                setExistingGallery([]); // Clear existing gallery if new files selected
+              }}
+            />
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Saving...' : 'Save Product'}</button>
         </form>

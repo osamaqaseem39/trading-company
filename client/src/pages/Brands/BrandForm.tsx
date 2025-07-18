@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { brandApi, Brand } from '../../services/api';
+import ImageUpload from '../../components/form/ImageUpload';
 
 const initialState = {
   name: '',
@@ -109,11 +110,18 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
             <textarea name="description" value={form.description} onChange={handleChange} className="w-full border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition" rows={3} placeholder="Enter brand description" />
           </div>
           <div>
-            <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Upload Image</label>
-            <div className="flex items-center gap-6">
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition" />
-              {preview && <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow" />}
-            </div>
+            <ImageUpload
+              label="Image"
+              multiple={false}
+              value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
+              onChange={file => {
+                setForm(prev => ({ ...prev, image: file }));
+                setPreview(file ? URL.createObjectURL(file as File) : undefined);
+              }}
+            />
+            {preview && typeof form.image === 'string' && (
+              <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow mt-2" />
+            )}
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Saving...' : isEdit ? 'Update Brand' : 'Add Brand'}</button>
         </form>

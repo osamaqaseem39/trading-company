@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { categoryApi, Category } from '../../services/api';
+import ImageUpload from '../../components/form/ImageUpload';
 
 const initialState = {
   name: '',
@@ -155,19 +156,18 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
             </select>
           </div>
           <div>
-            <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Image</label>
-            <div className="flex items-center gap-6">
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition" />
-              {preview && <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow" />}
-              {uploading && (
-                <div className="flex flex-col items-center ml-2">
-                  <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mb-1">
-                    <div className="h-full bg-brand-600 transition-all" style={{ width: `${uploadProgress}%` }} />
-                  </div>
-                  <span className="text-xs text-gray-500">Uploading {uploadProgress}%</span>
-                </div>
-              )}
-            </div>
+            <ImageUpload
+              label="Image"
+              multiple={false}
+              value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
+              onChange={file => {
+                setForm(prev => ({ ...prev, image: file }));
+                setPreview(file ? URL.createObjectURL(file as File) : undefined);
+              }}
+            />
+            {preview && typeof form.image === 'string' && (
+              <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow mt-2" />
+            )}
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading || uploading}>
             {uploading ? 'Uploading Image...' : loading ? (isEdit ? 'Updating...' : 'Saving...') : (isEdit ? 'Update Category' : 'Add Category')}
