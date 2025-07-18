@@ -13,7 +13,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://trading-company-bcyf.vercel.app',
+        url: 'https://adminserver.wingzimpex.com',
         description: 'Production Server',
       },
       {

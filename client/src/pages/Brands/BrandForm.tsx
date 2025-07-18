@@ -6,7 +6,7 @@ import ImageUpload from '../../components/form/ImageUpload';
 const initialState = {
   name: '',
   description: '',
-  image: undefined as File | undefined,
+  image: undefined as File | File[] | null | undefined,
 };
 
 type BrandFormMode = 'add' | 'edit';
@@ -16,7 +16,7 @@ async function uploadToCpanel(file: File): Promise<string> {
   const ext = file.name.split('.').pop();
   const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
-  const response = await fetch('https://server.wingzimpex.com/upload.php', {
+  const response = await fetch('https://admin.wingzimpex.com/upload.php', {
     method: 'POST',
     body: formData,
   });
@@ -31,7 +31,11 @@ async function uploadToCpanel(file: File): Promise<string> {
 const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [form, setForm] = useState(initialState);
+  const [form, setForm] = useState<{
+    name: string;
+    description: string;
+    image: File | File[] | null | undefined;
+  }>(initialState);
   const [preview, setPreview] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -115,8 +119,8 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
               multiple={false}
               value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
               onChange={file => {
-                setForm(prev => ({ ...prev, image: file }));
-                setPreview(file ? URL.createObjectURL(file as File) : undefined);
+                setForm(prev => ({ ...prev, image: Array.isArray(file) ? file[0] : file || undefined }));
+                setPreview(file ? URL.createObjectURL(Array.isArray(file) ? file[0] : file) : undefined);
               }}
             />
             {preview && typeof form.image === 'string' && (
