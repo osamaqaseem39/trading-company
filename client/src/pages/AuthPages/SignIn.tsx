@@ -60,7 +60,7 @@ export default function SignIn() {
         title="React.js SignIn Dashboard | TailAdmin - Next.js Admin Dashboard Template"
         description="This is React.js SignIn Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <div className="relative flex w-full h-screen overflow-hidden bg-white z-1 dark:bg-gray-900">
+      <div className="relative flex w-full h-screen overflow-hidden bg-[#ede7de] z-1">
         <div className="flex flex-col flex-1 p-6 rounded-2xl sm:rounded-none sm:border-0 sm:p-8">
           <div className="w-full max-w-md pt-5 mx-auto sm:py-10">
             <Link

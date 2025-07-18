@@ -47,28 +47,29 @@ const BrandList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-8 border border-gray-200 dark:border-gray-800">
+    <div className="w-full p-4">
+      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Brands</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#2d2d2d' }}>Brands</h1>
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search by name..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border rounded px-3 py-2 w-full md:w-64"
+              className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
+              style={{ color: '#2d2d2d' }}
             />
             <Link to="/brands/add" className="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 transition">Add Brand</Link>
           </div>
         </div>
         {loading ? (
-          <div className="flex justify-center items-center h-64">Loading...</div>
+          <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>Loading...</div>
         ) : (
           sorted.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 rounded-lg">
-                <thead>
+              <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#2d2d2d]">
+                <thead className="text-[#2d2d2d]">
                   <tr className="bg-gray-100">
                     <th className="px-4 py-2 border">Image</th>
                     <th className="px-4 py-2 border cursor-pointer" onClick={() => handleSort('name')}>
@@ -78,7 +79,7 @@ const BrandList: React.FC = () => {
                     <th className="px-4 py-2 border">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-[#2d2d2d]">
                   {sorted.map((b) => (
                     <tr key={b._id} className="border-t">
                       <td className="px-4 py-2 border">
@@ -87,8 +88,8 @@ const BrandList: React.FC = () => {
                       <td className="px-4 py-2 border font-medium">{b.name}</td>
                       <td className="px-4 py-2 border">{b.description}</td>
                       <td className="px-4 py-2 border">
-                        <Link to={`/brands/${b._id}/edit`} className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition mr-2">Edit</Link>
-                        <button onClick={() => handleDelete(b._id)} className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition">Delete</button>
+                        <Link to={`/brands/${b._id}/edit`} className="px-3 py-1 rounded font-semibold bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition mr-2">Edit</Link>
+                        <button onClick={() => handleDelete(b._id)} className="px-3 py-1 rounded font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition">Delete</button>
                       </td>
                     </tr>
                   ))}
@@ -96,7 +97,7 @@ const BrandList: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="flex justify-center items-center h-64">No brands found.</div>
+            <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>No brands found.</div>
           )
         )}
       </div>

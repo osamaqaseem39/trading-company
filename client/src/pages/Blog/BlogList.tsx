@@ -80,17 +80,18 @@ const BlogList: React.FC = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-8 border border-gray-200 dark:border-gray-800">
+    <div className="w-full p-4">
+      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Blog Posts</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#2d2d2d' }}>Blog Posts</h1>
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search by title..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border rounded px-3 py-2 w-full md:w-64"
+              className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
+              style={{ color: '#2d2d2d' }}
             />
             <Link
               to="/blog/add"
@@ -100,17 +101,15 @@ const BlogList: React.FC = () => {
             </Link>
           </div>
         </div>
-
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" style={{ color: '#2d2d2d' }}>
             {error}
           </div>
         )}
-
         {sorted.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-200 rounded-lg">
-              <thead>
+            <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#2d2d2d]">
+              <thead className="text-[#2d2d2d]">
                 <tr className="bg-gray-100">
                   <th className="px-4 py-2 border">Image</th>
                   <th className="px-4 py-2 border cursor-pointer" onClick={() => handleSort('title')}>
@@ -120,7 +119,7 @@ const BlogList: React.FC = () => {
                   <th className="px-4 py-2 border">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="text-[#2d2d2d]">
                 {sorted.map((blog) => (
                   <tr key={blog._id} className="border-t">
                     <td className="px-4 py-2 border">
@@ -138,19 +137,19 @@ const BlogList: React.FC = () => {
                     <td className="px-4 py-2 border">
                       <Link
                         to={`/blog/${blog.slug}`}
-                        className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition mr-2"
+                        className="px-3 py-1 rounded font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200 transition mr-2"
                       >
                         View
                       </Link>
                       <Link
                         to={`/blog/edit/${blog._id}`}
-                        className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition mr-2"
+                        className="px-3 py-1 rounded font-semibold bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition mr-2"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(blog._id)}
-                        className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+                        className="px-3 py-1 rounded font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition"
                       >
                         Delete
                       </button>
@@ -161,7 +160,7 @@ const BlogList: React.FC = () => {
             </table>
           </div>
         ) : (
-          <div className="flex justify-center items-center h-64">No blog posts found.</div>
+          <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>No blog posts found.</div>
         )}
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} isFullscreen={false}>
           {modalImg && (

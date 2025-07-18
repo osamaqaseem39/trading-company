@@ -45,25 +45,26 @@ const SupplierList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-8 border border-gray-200 dark:border-gray-800">
+    <div className="w-full p-4">
+      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Supplier Requests</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#2d2d2d' }}>Supplier Requests</h1>
           <input
             type="text"
             placeholder="Search by name or company..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="border rounded px-3 py-2 w-full md:w-64"
+            className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
+            style={{ color: '#2d2d2d' }}
           />
         </div>
         {loading ? (
-          <div className="flex justify-center items-center h-64">Loading...</div>
+          <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>Loading...</div>
         ) : (
           sorted.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 rounded-lg">
-                <thead>
+              <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#2d2d2d]">
+                <thead className="text-[#2d2d2d]">
                   <tr className="bg-gray-100">
                     <th className="px-4 py-2 border cursor-pointer" onClick={() => handleSort('name')}>
                       Name {sortKey === 'name' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
@@ -77,7 +78,7 @@ const SupplierList: React.FC = () => {
                     <th className="px-4 py-2 border">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-[#2d2d2d]">
                   {sorted.map((s) => (
                     <tr key={s._id} className="border-t">
                       <td className="px-4 py-2 border font-medium">{s.firstName} {s.lastName}</td>
@@ -86,7 +87,7 @@ const SupplierList: React.FC = () => {
                       <td className="px-4 py-2 border">{s.phone}</td>
                       <td className="px-4 py-2 border text-xs text-gray-500">{new Date(s.createdAt).toLocaleString()}</td>
                       <td className="px-4 py-2 border">
-                        <Link to={`/suppliers/${s._id}`} className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition">View</Link>
+                        <Link to={`/suppliers/${s._id}`} className="px-3 py-1 rounded font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200 transition">View</Link>
                       </td>
                     </tr>
                   ))}
@@ -94,7 +95,7 @@ const SupplierList: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="flex justify-center items-center h-64">No supplier requests found.</div>
+            <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>No supplier requests found.</div>
           )
         )}
       </div>

@@ -59,28 +59,29 @@ const ProductList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-8 border border-gray-200 dark:border-gray-800">
+    <div className="w-full p-4">
+      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-extrabold text-brand-700 dark:text-brand-400">Products</h1>
+          <h1 className="text-3xl font-extrabold" style={{ color: '#2d2d2d' }}>Products</h1>
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search by name..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border rounded px-3 py-2 w-full md:w-64"
+              className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
+              style={{ color: '#2d2d2d' }}
             />
             <Link to="/products/add" className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold text-lg shadow">Add Product</Link>
           </div>
         </div>
         {loading ? (
-          <div className="flex justify-center items-center h-64">Loading...</div>
+          <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>Loading...</div>
         ) : (
           sorted.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 rounded-lg">
-                <thead>
+              <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#2d2d2d]">
+                <thead className="text-[#2d2d2d]">
                   <tr className="bg-gray-100">
                     <th className="px-4 py-2 border">Image</th>
                     <th className="px-4 py-2 border cursor-pointer" onClick={() => handleSort('title')}>
@@ -93,7 +94,7 @@ const ProductList: React.FC = () => {
                     <th className="px-4 py-2 border">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-[#2d2d2d]">
                   {sorted.map(product => (
                     <tr key={product._id} className="border-t">
                       <td className="px-4 py-2 border">
@@ -110,9 +111,9 @@ const ProductList: React.FC = () => {
                       <td className="px-4 py-2 border">{product.brand || '-'}</td>
                       <td className="px-4 py-2 border max-w-xs truncate">{product.description}</td>
                       <td className="px-4 py-2 border">
-                        <Link to={`/products/${product._id}`} className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition mr-2">View</Link>
-                        <Link to={`/products/${product._id}/edit`} className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition mr-2">Edit</Link>
-                        <button onClick={() => handleDelete(product._id)} className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition">Delete</button>
+                        <Link to={`/products/${product._id}`} className="px-3 py-1 rounded font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200 transition mr-2">View</Link>
+                        <Link to={`/products/${product._id}/edit`} className="px-3 py-1 rounded font-semibold bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition mr-2">Edit</Link>
+                        <button onClick={() => handleDelete(product._id)} className="px-3 py-1 rounded font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition">Delete</button>
                       </td>
                     </tr>
                   ))}
@@ -120,7 +121,7 @@ const ProductList: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="flex justify-center items-center h-64">No products found.</div>
+            <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>No products found.</div>
           )
         )}
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} isFullscreen={false}>
