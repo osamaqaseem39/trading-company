@@ -85,14 +85,13 @@ const ProductForm: React.FC = () => {
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name === 'category') {
-      const selectedCat = categories.find(c => c._id === value);
-      if (selectedCat && selectedCat.parent) {
-        setProduct({ ...product, category: selectedCat.parent as string, subCategory: value });
-      } else {
-        setProduct({ ...product, category: value, subCategory: '' });
-      }
+      setProduct(prev => ({
+        ...prev,
+        category: value,
+        subCategory: '', // Reset subcategory when category changes
+      }));
     } else {
-      setProduct({ ...product, [name]: value });
+      setProduct(prev => ({ ...prev, [name]: value }));
     }
   };
 
@@ -177,7 +176,12 @@ const ProductForm: React.FC = () => {
             <label className="block font-semibold mb-1">Subcategory</label>
             <select name="subCategory" value={product.subCategory || ''} onChange={handleSelectChange} className="w-full border px-3 py-2 rounded">
               <option value="">Select a subcategory</option>
-              {subcategories.filter(sc => sc.parent === product.category).map(sc => (
+              {subcategories.filter(sc => {
+                if (!sc.parent) return false;
+                if (typeof sc.parent === 'string') return sc.parent === product.category;
+                if (typeof sc.parent === 'object' && sc.parent._id) return sc.parent._id === product.category;
+                return false;
+              }).map(sc => (
                 <option key={sc._id} value={sc._id}>{sc.name}</option>
               ))}
             </select>
