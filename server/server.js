@@ -14,6 +14,7 @@ const quotesRouter = require('./routes/quotes');
 const supplierRoutes = require('./routes/suppliers');
 const brandRoutes = require('./routes/brands');
 const categoryRoutes = require('./routes/categories');
+const subcategoryRoutes = require('./routes/subcategories');
 
 // Load environment variables
 dotenv.config();
@@ -182,6 +183,7 @@ app.use('/api/quotes', quotesRouter);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/subcategories', subcategoryRoutes);
 app.use('/uploads/products', express.static(path.join(__dirname, '../uploads/products')));
 app.use('/uploads/brochures', express.static(path.join(__dirname, '../uploads/brochures')));
 app.use('/uploads/brand-category', express.static(path.join(__dirname, '../uploads/brand-category')));
