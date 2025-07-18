@@ -266,3 +266,14 @@ export const categoryApi = {
     }),
   delete: (id: string) => axios.delete(`${BASE_URL}/categories/${id}`),
 };
+
+export interface SubCategory extends Category {}
+
+export const subcategoryApi = {
+  getAll: () => axios.get<SubCategory[]>(`${BASE_URL}/subcategories`),
+  getById: (id: string) => axios.get<SubCategory>(`${BASE_URL}/subcategories/${id}`),
+  create: (data: any) => axios.post<SubCategory>(`${BASE_URL}/subcategories`, data),
+  update: (id: string, data: any) => axios.put<SubCategory>(`${BASE_URL}/subcategories/${id}`, data),
+  delete: (id: string) => axios.delete(`${BASE_URL}/subcategories/${id}`),
+  getNested: (parentId: string) => axios.get<SubCategory[]>(`${BASE_URL}/subcategories/nested?parentId=${parentId}`),
+};

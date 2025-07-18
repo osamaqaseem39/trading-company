@@ -68,6 +68,14 @@ const navItems: NavItem[] = [
       { name: "Add Category", path: "/categories/add" },
     ],
   },
+  {
+    icon: <DocsIcon />,
+    name: "Subcategories",
+    subItems: [
+      { name: "All Subcategories", path: "/subcategories" },
+      { name: "Add Subcategory", path: "/subcategories/add" },
+    ],
+  },
 ];
 
 const othersItems: NavItem[] = [

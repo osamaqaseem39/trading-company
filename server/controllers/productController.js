@@ -72,4 +72,40 @@ exports.deleteProduct = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+// Get products by category
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const products = await Product.find({ category: categoryId }).sort({ createdAt: -1 });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get products by subcategory
+exports.getProductsBySubcategory = async (req, res) => {
+  try {
+    const { subcategoryId } = req.params;
+    const products = await Product.find({ subCategory: subcategoryId }).sort({ createdAt: -1 });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Flexible query: /products/query?category=...&subCategory=...
+exports.queryProducts = async (req, res) => {
+  try {
+    const { category, subCategory } = req.query;
+    const filter = {};
+    if (category) filter.category = category;
+    if (subCategory) filter.subCategory = subCategory;
+    const products = await Product.find(filter).sort({ createdAt: -1 });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }; 

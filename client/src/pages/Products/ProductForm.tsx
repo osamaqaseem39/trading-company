@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { productApi, Product, brandApi, Brand, categoryApi, Category } from '../../services/api';
+import { productApi, Product, brandApi, Brand, categoryApi, Category, subcategoryApi, SubCategory } from '../../services/api';
 
 // Upload a file to cPanel server and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
@@ -33,6 +33,7 @@ const ProductForm: React.FC = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -59,6 +60,7 @@ const ProductForm: React.FC = () => {
     brandApi.getAll().then(res => setBrands(res.data)).catch(() => setBrands([]));
     categoryApi.getAll().then(res => setCategories(res.data)).catch(() => setCategories([]));
     productApi.getAll().then(res => setAllProducts(res.data)).catch(() => setAllProducts([]));
+    subcategoryApi.getAll().then(res => setSubcategories(res.data)).catch(() => setSubcategories([]));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -170,6 +172,17 @@ const ProductForm: React.FC = () => {
             ))}
           </select>
         </div>
+        {product.category && (
+          <div>
+            <label className="block font-semibold mb-1">Subcategory</label>
+            <select name="subCategory" value={product.subCategory || ''} onChange={handleSelectChange} className="w-full border px-3 py-2 rounded">
+              <option value="">Select a subcategory</option>
+              {subcategories.filter(sc => sc.parent === product.category).map(sc => (
+                <option key={sc._id} value={sc._id}>{sc.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <label className="block font-semibold mb-1">Featured Image</label>
           <input type="file" accept="image/*" onChange={handleFeaturedChange} />
