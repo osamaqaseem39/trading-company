@@ -76,6 +76,7 @@ export default function App() {
             <Route path="/categories/:id/edit" element={<CategoryForm mode='edit' />} />
 
             {/* Subcategory Routes */}
+            <Route path="/subcategories" element={<CategoryList isSubcategoryList={true} />} />
             <Route path="/subcategories/add" element={<SubCategoryForm mode='add' />} />
             <Route path="/subcategories/:id/edit" element={<SubCategoryForm mode='edit' />} />
 
