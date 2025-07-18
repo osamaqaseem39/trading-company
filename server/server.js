@@ -29,8 +29,10 @@ app.use(cors({
     'https://trading-company.vercel.app',
     'https://server.wingzimpex.com',
     'https://server.wingzimpex.com',
+   'https://admin.wingzimpex.com',
     'https://wingzimpex.com',
-    'https://trading-company-website.vercel.app'
+    'https://trading-company-website.vercel.app',
+    'https://www.wingzimpex.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -60,8 +62,11 @@ app.use((req, res, next) => {
     'https://trading-company.vercel.app',
     'https://server.wingzimpex.com',
     'https://server.wingzimpex.com',
+    
+   'https://admin.wingzimpex.com',
     'https://wingzimpex.com',
-    'https://trading-company-website.vercel.app'
+    'https://trading-company-website.vercel.app',
+    'https://www.wingzimpex.com'
   ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
