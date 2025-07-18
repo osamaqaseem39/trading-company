@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { productApi, Product, brandApi, Brand, categoryApi, Category, subcategoryApi, SubCategory } from '../../services/api';
 
@@ -20,6 +20,27 @@ async function uploadToCpanel(file: File): Promise<string> {
   }
 }
 
+// Add formatText and insertFormatting helpers (adapted from BlogForm)
+function formatText(text: string) {
+  text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__(.+?)__/g, '<em>$1</em>');
+  text = text.replace(/^- (.+)$/gm, '<li>$1</li>').replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+  text = text.replace(/^\d+\. (.+)$/gm, '<li>$1</li>').replace(/((?:<li>.*<\/li>\n?)+)/g, '<ol>$1</ol>');
+  text = text.replace(/`(.+?)`/g, '<code>$1</code>');
+  text = text.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+  text = text.replace(/^---$/gm, '<hr>');
+  text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  text = text.replace(/!img\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1">');
+  text = text.replace(/<center>(.+?)<\/center>/g, '<div style="text-align: center">$1</div>');
+  text = text.replace(/<right>(.+?)<\/right>/g, '<div style="text-align: right">$1</div>');
+  text = text.replace(/<left>(.+?)<\/left>/g, '<div style="text-align: left">$1</div>');
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
+
 const ProductForm: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -34,6 +55,9 @@ const ProductForm: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
+
+  const descriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [descriptionPreview, setDescriptionPreview] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -62,6 +86,45 @@ const ProductForm: React.FC = () => {
     productApi.getAll().then(res => setAllProducts(res.data)).catch(() => setAllProducts([]));
     subcategoryApi.getAll().then(res => setSubcategories(res.data)).catch(() => setSubcategories([]));
   }, []);
+
+  useEffect(() => {
+    setDescriptionPreview(formatText(product.description || ''));
+  }, [product.description]);
+
+  function insertFormatting(format: string) {
+    const textarea = descriptionTextareaRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+    let insertion = '';
+    switch(format) {
+      case 'bold': insertion = '**' + (start === end ? 'text' : selectedText) + '**'; break;
+      case 'italic': insertion = '__' + (start === end ? 'text' : selectedText) + '__'; break;
+      case 'h1': insertion = '# ' + (start === end ? 'Heading 1' : selectedText); break;
+      case 'h2': insertion = '## ' + (start === end ? 'Heading 2' : selectedText); break;
+      case 'h3': insertion = '### ' + (start === end ? 'Heading 3' : selectedText); break;
+      case 'ul': insertion = '- ' + (start === end ? 'List item' : selectedText); break;
+      case 'ol': insertion = '1. ' + (start === end ? 'List item' : selectedText); break;
+      case 'code': insertion = '`' + (start === end ? 'code' : selectedText) + '`'; break;
+      case 'quote': insertion = '> ' + (start === end ? 'Quote' : selectedText); break;
+      case 'hr': insertion = '---'; break;
+      case 'link': insertion = '[' + (start === end ? 'link text' : selectedText) + '](url)'; break;
+      case 'image': insertion = '!img[alt text](image-url)'; break;
+      case 'center': insertion = '<center>' + (start === end ? 'centered text' : selectedText) + '</center>'; break;
+      case 'right': insertion = '<right>' + (start === end ? 'right-aligned text' : selectedText) + '</right>'; break;
+      case 'left': insertion = '<left>' + (start === end ? 'left-aligned text' : selectedText) + '</left>'; break;
+    }
+    const newText = text.substring(0, start) + insertion + text.substring(end);
+    setProduct(prev => ({ ...prev, description: newText }));
+    setTimeout(() => {
+      if (textarea) {
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + insertion.length;
+      }
+    }, 0);
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
@@ -152,7 +215,48 @@ const ProductForm: React.FC = () => {
           </div>
           <div>
             <label className="block font-semibold mb-1">Description</label>
-            <textarea name="description" value={product.description as string} onChange={handleChange} className="w-full border px-3 py-2 rounded" required />
+            <div className="mt-1 flex flex-wrap gap-2 mb-2">
+              <div className="flex gap-2 border-r pr-2 mr-2">
+                <button type="button" onClick={() => insertFormatting('bold')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Bold">B</button>
+                <button type="button" onClick={() => insertFormatting('italic')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Italic">I</button>
+              </div>
+              <div className="flex gap-2 border-r pr-2 mr-2">
+                <button type="button" onClick={() => insertFormatting('h1')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Heading 1">H1</button>
+                <button type="button" onClick={() => insertFormatting('h2')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Heading 2">H2</button>
+                <button type="button" onClick={() => insertFormatting('h3')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Heading 3">H3</button>
+              </div>
+              <div className="flex gap-2 border-r pr-2 mr-2">
+                <button type="button" onClick={() => insertFormatting('ul')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Bullet List">•</button>
+                <button type="button" onClick={() => insertFormatting('ol')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Numbered List">1.</button>
+              </div>
+              <div className="flex gap-2 border-r pr-2 mr-2">
+                <button type="button" onClick={() => insertFormatting('code')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Code">{'</>'}</button>
+                <button type="button" onClick={() => insertFormatting('quote')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Quote">"</button>
+              </div>
+              <div className="flex gap-2 border-r pr-2 mr-2">
+                <button type="button" onClick={() => insertFormatting('link')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Link">🔗</button>
+                <button type="button" onClick={() => insertFormatting('image')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Image">🖼️</button>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => insertFormatting('center')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Center Align">≡</button>
+                <button type="button" onClick={() => insertFormatting('right')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Right Align">≫</button>
+                <button type="button" onClick={() => insertFormatting('left')} className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600" title="Left Align">≪</button>
+              </div>
+            </div>
+            <textarea
+              ref={descriptionTextareaRef}
+              name="description"
+              value={product.description as string}
+              onChange={handleChange}
+              required
+              rows={8}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4">Preview</label>
+            <div
+              className="mt-1 p-4 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
+              dangerouslySetInnerHTML={{ __html: descriptionPreview }}
+            />
           </div>
           <div>
             <label className="block font-semibold mb-1">Brand</label>
@@ -167,7 +271,7 @@ const ProductForm: React.FC = () => {
             <label className="block font-semibold mb-1">Category</label>
             <select name="category" value={product.category || ''} onChange={handleSelectChange} className="w-full border px-3 py-2 rounded" required>
               <option value="">Select a category</option>
-              {categories.map(c => (
+              {categories.filter(c => !c.parent).map(c => (
                 <option key={c._id} value={c._id}>{c.name}</option>
               ))}
             </select>

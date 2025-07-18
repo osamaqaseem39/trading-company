@@ -92,7 +92,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
       } else {
         await categoryApi.create(payload);
       }
-      navigate('/categories');
+      navigate('/subcategories');
     } catch (err) {
       setError('Failed to save subcategory.');
     } finally {
