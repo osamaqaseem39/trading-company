@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const Product = require('../models/Product');
-const { addProduct, editProduct, getAllProducts, getProduct, deleteProduct } = require('../controllers/productController');
+const { addProduct, editProduct, getAllProducts, getProduct, deleteProduct, getProductsByCategory, getProductsBySubcategory, queryProducts } = require('../controllers/productController');
 
 // Set up multer storage
 const storage = multer.diskStorage({
@@ -25,7 +25,14 @@ router.post('/', upload.fields([
 // Get all products
 router.get('/', getAllProducts);
 
-// Get single product
+// Get products by category
+router.get('/category/:categoryId', getProductsByCategory);
+// Get products by subcategory
+router.get('/subcategory/:subcategoryId', getProductsBySubcategory);
+// Flexible query endpoint
+router.get('/query', queryProducts);
+
+// Get single product (must be after the above)
 router.get('/:id', getProduct);
 
 // Update product
