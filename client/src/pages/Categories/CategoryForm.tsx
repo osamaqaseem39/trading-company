@@ -159,9 +159,11 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
             <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Parent Category (optional)</label>
             <select name="parent" value={form.parent} onChange={handleChange} className="w-full border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
               <option value="">None</option>
-              {allCategories.filter(c => !isEdit || c._id !== id).map(c => (
-                <option key={c._id} value={c._id}>{c.name}</option>
-              ))}
+              {allCategories
+                .filter(c => (!isEdit || c._id !== id) && (!c.parent || c.parent === null))
+                .map(c => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
             </select>
           </div>
           <div>
