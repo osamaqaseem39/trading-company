@@ -18,7 +18,7 @@ exports.createCategory = async (req, res) => {
 
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find().populate('parent').sort({ createdAt: -1 });
+    const categories = await Category.find().sort({ createdAt: -1 });
     res.json(categories);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -27,7 +27,7 @@ exports.getCategories = async (req, res) => {
 
 exports.getCategory = async (req, res) => {
   try {
-    const category = await Category.findById(req.params.id).populate('parent');
+    const category = await Category.findById(req.params.id);
     if (!category) return res.status(404).json({ error: 'Not found' });
     res.json(category);
   } catch (err) {
