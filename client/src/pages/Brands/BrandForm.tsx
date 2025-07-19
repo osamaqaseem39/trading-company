@@ -84,15 +84,14 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
       } else if (typeof form.image === 'string') {
         imageUrl = form.image;
       }
-      const payload = {
-        name: form.name,
-        description: form.description,
-        image: imageUrl,
-      };
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('description', form.description);
+      if (imageUrl) formData.append('image', imageUrl);
       if (isEdit && id) {
-        await brandApi.update(id, payload);
+        await brandApi.update(id, formData);
       } else {
-        await brandApi.create(payload);
+        await brandApi.create(formData);
       }
       navigate('/brands');
     } catch (err) {
