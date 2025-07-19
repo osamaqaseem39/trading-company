@@ -10,21 +10,29 @@ const initialState = {
 
 type BrandFormMode = 'add' | 'edit';
 // Brand-specific image upload
-async function uploadBrandImage(file: File): Promise<string> {
-  const formData = new FormData();
-  const ext = file.name.split('.').pop();
-  const uniqueName = `${Date.now()}-brand-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-  formData.append('file', file, uniqueName);
-  const response = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData,
+function uploadBrandImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    const ext = file.name.split('.').pop();
+    const uniqueName = `${Date.now()}-brand-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+    formData.append('file', file, uniqueName);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://osamaqaseem.online/upload.php');
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        if (data.url) {
+          resolve(data.url);
+        } else {
+          reject(new Error(data.error || 'Upload failed'));
+        }
+      } else {
+        reject(new Error('Upload failed'));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Upload failed'));
+    xhr.send(formData);
   });
-  const data = await response.json();
-  if (data.url) {
-    return data.url;
-  } else {
-    throw new Error(data.error || 'Upload failed');
-  }
 }
 
 const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {

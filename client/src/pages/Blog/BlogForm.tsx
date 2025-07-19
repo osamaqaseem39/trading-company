@@ -14,7 +14,7 @@ async function uploadBlogImage(file: File): Promise<string> {
   const ext = file.name.split('.').pop();
   const uniqueName = `${Date.now()}-blog-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
-  const response = await fetch('/api/upload', {
+  const response = await fetch('https://osamaqaseem.online/upload.php', {
     method: 'POST',
     body: formData,
   });

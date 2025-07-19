@@ -111,12 +111,16 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
       const ext = file.name.split('.').pop();
       const uniqueName = `${Date.now()}-category-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       formData.append('file', file, uniqueName);
-      fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-        .then(response => response.json())
-        .then(data => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://osamaqaseem.online/upload.php');
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      };
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
           if (data.url) {
             setPreview(data.url);
             setForm(prev => ({ ...prev, image: data.url }));
@@ -125,17 +129,22 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
             setError(data.error || 'Upload failed');
             reject(new Error(data.error || 'Upload failed'));
           }
-          setUploading(false);
-          setUploadProgress(0);
-        })
-        .catch(() => {
-          setUploading(false);
-          setUploadProgress(0);
+        } else {
           setError('Upload failed');
           reject(new Error('Upload failed'));
-        });
+        }
+        setUploading(false);
+        setUploadProgress(0);
+      };
+      xhr.onerror = () => {
+        setUploading(false);
+        setUploadProgress(0);
+        setError('Upload failed');
+        reject(new Error('Upload failed'));
+      };
       setUploading(true);
       setUploadProgress(0);
+      xhr.send(formData);
     });
   };
 
