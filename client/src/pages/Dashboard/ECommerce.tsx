@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { productApi, blogApi, serviceApi, quoteApi, Product, Blog, Service, Quote } from '../../services/api';
+import { productApi, blogApi, serviceApi, quoteApi, categoryApi, subcategoryApi, Product, Blog, Service, Quote, Category, SubCategory } from '../../services/api';
 import PageMeta from "../../components/common/PageMeta";
 import ProductList from '../Products/ProductList';
 
@@ -9,6 +9,8 @@ export default function Ecommerce() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,12 +18,16 @@ export default function Ecommerce() {
       productApi.getAll(),
       blogApi.getAll(),
       serviceApi.getAll(),
-      quoteApi.getAll()
-    ]).then(([prodRes, blogRes, servRes, quotesRes]) => {
+      quoteApi.getAll(),
+      categoryApi.getAll(),
+      subcategoryApi.getAll()
+    ]).then(([prodRes, blogRes, servRes, quotesRes, catRes, subcatRes]) => {
       setProducts(Array.isArray(prodRes.data) ? prodRes.data : []);
       setBlogs(Array.isArray(blogRes.data) ? blogRes.data : []);
       setServices(Array.isArray(servRes.data) ? servRes.data : []);
       setQuotes(Array.isArray(quotesRes.data) ? quotesRes.data : []);
+      setCategories(Array.isArray(catRes.data) ? catRes.data : []);
+      setSubcategories(Array.isArray(subcatRes.data) ? subcatRes.data : []);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -51,6 +57,14 @@ export default function Ecommerce() {
         <div className="bg-white dark:bg-gray-900 shadow rounded-xl p-6 flex flex-col items-center">
           <span className="text-4xl font-bold text-orange-600">{quotes.filter(q => q.status === 'pending').length}</span>
           <span className="mt-2 text-lg font-semibold">Pending Messages</span>
+        </div>
+        <div className="bg-white dark:bg-gray-900 shadow rounded-xl p-6 flex flex-col items-center">
+          <span className="text-4xl font-bold text-blue-600">{categories.length}</span>
+          <span className="mt-2 text-lg font-semibold">Categories</span>
+        </div>
+        <div className="bg-white dark:bg-gray-900 shadow rounded-xl p-6 flex flex-col items-center">
+          <span className="text-4xl font-bold text-pink-600">{subcategories.length}</span>
+          <span className="mt-2 text-lg font-semibold">Subcategories</span>
         </div>
       </div>
       {loading ? (

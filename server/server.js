@@ -90,7 +90,6 @@ app.use((req, res, next) => {
       name: mongoose.connection.name || 'unknown',
       port: mongoose.connection.port || 'unknown'
     });
-    
     return res.status(503).json({ 
       message: 'Database connection not ready',
       state: states[state] || 'unknown',
