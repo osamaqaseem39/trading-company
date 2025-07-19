@@ -74,7 +74,7 @@ const ServiceForm: React.FC = () => {
     setError(null);
     try {
       let featuredImageUrl = form.featuredImage;
-      if (featuredImageFile) {
+      if (featuredImageFile instanceof File) {
         featuredImageUrl = await uploadToCpanel(featuredImageFile);
       }
       // Always set featuredImage, even if empty
@@ -131,7 +131,7 @@ const ServiceForm: React.FC = () => {
           <ImageUpload
             label="Featured Image"
             multiple={false}
-            value={featuredImageFile}
+            value={featuredImageFile instanceof File ? featuredImageFile : null}
             onChange={file => {
               const singleFile = Array.isArray(file) ? file[0] : file;
               setFeaturedImageFile(singleFile as File | null);

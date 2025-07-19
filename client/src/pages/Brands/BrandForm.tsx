@@ -84,14 +84,15 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
       } else if (typeof form.image === 'string') {
         imageUrl = form.image;
       }
-      const formData = new FormData();
-      formData.append('name', form.name);
-      formData.append('description', form.description);
-      if (imageUrl) formData.append('image', imageUrl);
+      const payload = {
+        name: form.name,
+        description: form.description,
+        image: imageUrl,
+      };
       if (isEdit && id) {
-        await brandApi.update(id, formData);
+        await brandApi.update(id, payload);
       } else {
-        await brandApi.create(formData);
+        await brandApi.create(payload);
       }
       navigate('/brands');
     } catch (err) {
@@ -119,7 +120,7 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
             <ImageUpload
               label="Image"
               multiple={false}
-              value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
+              value={form.image instanceof File ? form.image : null}
               onChange={file => {
                 const singleFile = Array.isArray(file) ? file[0] : file;
                 setForm(prev => ({ ...prev, image: singleFile || null }));

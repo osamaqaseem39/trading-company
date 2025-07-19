@@ -123,7 +123,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
     try {
       const slug = generateSlug(formData.title);
       let featuredImageUrl = formData.featuredImage;
-      if (featuredImageFile) {
+      if (featuredImageFile instanceof File) {
         featuredImageUrl = await uploadToCpanel(featuredImageFile);
       }
       // Always set featuredImage, even if empty
@@ -283,7 +283,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
           <ImageUpload
             label="Featured Image"
             multiple={false}
-            value={featuredImageFile}
+            value={featuredImageFile instanceof File ? featuredImageFile : null}
             onChange={file => {
               const singleFile = Array.isArray(file) ? file[0] : file;
               setFeaturedImageFile(singleFile as File | null);

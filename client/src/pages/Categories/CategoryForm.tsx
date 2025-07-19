@@ -83,10 +83,14 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     }
     setLoading(true);
     try {
+      let imageUrl = form.image;
+      if (form.image instanceof File) {
+        imageUrl = await uploadToCpanel(form.image);
+      }
       const payload: any = {
         name: form.name,
         description: form.description,
-        image: form.image,
+        image: imageUrl,
       };
       if (form.parent) {
         payload.parent = form.parent;
@@ -164,7 +168,7 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
             <ImageUpload
               label="Image"
               multiple={false}
-              value={form.image ? (typeof form.image === 'string' ? null : form.image) : null}
+              value={form.image instanceof File ? form.image : null}
               onChange={file => {
                 const singleFile = Array.isArray(file) ? file[0] : file;
                 setForm(prev => ({ ...prev, image: singleFile || null }));
