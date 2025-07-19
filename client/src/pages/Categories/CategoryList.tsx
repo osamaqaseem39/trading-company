@@ -45,6 +45,21 @@ const CategoryList: React.FC<CategoryListProps> = ({ isSubcategoryList }) => {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (window.confirm(`Are you sure you want to delete this ${isSubcategoryList ? 'subcategory' : 'category'}?`)) {
+      try {
+        if (isSubcategoryList) {
+          await subcategoryApi.delete(id);
+        } else {
+          await categoryApi.delete(id);
+        }
+        setCategories(categories => categories.filter(cat => cat._id !== id));
+      } catch (err) {
+        alert('Failed to delete.');
+      }
+    }
+  };
+
   return (
     <div className="w-full p-4">
       <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
@@ -80,7 +95,8 @@ const CategoryList: React.FC<CategoryListProps> = ({ isSubcategoryList }) => {
                       <td className="px-4 py-2 border font-semibold">{cat.name}</td>
                       <td className="px-4 py-2 border">{cat.description}</td>
                       <td className="px-4 py-2 border">
-                        <Link to={isSubcategoryList ? `/subcategories/${cat._id}/edit` : `/categories/${cat._id}/edit`} className="px-3 py-1 rounded font-semibold bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition">Edit</Link>
+                        <Link to={isSubcategoryList ? `/subcategories/${cat._id}/edit` : `/categories/${cat._id}/edit`} className="px-3 py-1 rounded font-semibold bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition mr-2">Edit</Link>
+                        <button onClick={() => handleDelete(cat._id)} className="px-3 py-1 rounded font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition">Delete</button>
                       </td>
                     </tr>
                   ))}
