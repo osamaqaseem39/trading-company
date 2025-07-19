@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { categoryApi, Category } from '../../services/api';
+import { categoryApi, subcategoryApi, Category } from '../../services/api';
 import ImageUpload from '../../components/form/ImageUpload';
 
 const initialState = {
   name: '',
   description: '',
   image: null as string | File | null,
-  parent: '', // required for subcategory
+  parent: '',
 };
 
 type SubCategoryFormMode = 'add' | 'edit';
@@ -36,7 +36,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
       .then(res => setAllCategories(Array.isArray(res.data) ? res.data : []));
     if (isEdit && id) {
       setLoading(true);
-      categoryApi.getById(id)
+      subcategoryApi.getById(id)
         .then(res => {
           setForm({
             name: res.data.name,
@@ -44,7 +44,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
             image: res.data.image || '',
             parent: res.data.parent && typeof res.data.parent === 'object' ? (res.data.parent as Category)._id : (res.data.parent || ''),
           });
-          setPreview(res.data.image ? `/${res.data.image.replace('uploads', 'uploads')}` : null);
+          setPreview(res.data.image ? res.data.image : null);
         })
         .catch(() => setError('Failed to load subcategory'))
         .finally(() => setLoading(false));
@@ -54,24 +54,6 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-      setUploading(true);
-      setUploadProgress(0);
-      try {
-        const imageUrl = await uploadToCpanel(file);
-        setForm(prev => ({ ...prev, image: imageUrl }));
-      } catch (err) {
-        setError('Image upload failed');
-      } finally {
-        setUploading(false);
-        setUploadProgress(0);
-      }
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,9 +80,9 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
         parent: form.parent,
       };
       if (isEdit && id) {
-        await categoryApi.update(id, payload);
+        await subcategoryApi.update(id, payload);
       } else {
-        await categoryApi.create(payload);
+        await subcategoryApi.create(payload);
       }
       navigate('/subcategories');
     } catch (err) {
@@ -159,7 +141,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
             <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Parent Category <span className="text-red-500">*</span></label>
             <select name="parent" value={form.parent} onChange={handleChange} required className="w-full border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
               <option value="">Select Parent Category</option>
-              {allCategories.map(c => (
+              {allCategories.filter(c => !c.parent || c.parent === null).map(c => (
                 <option key={c._id} value={c._id}>{c.name}</option>
               ))}
             </select>
