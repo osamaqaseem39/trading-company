@@ -24,7 +24,6 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3000',
-  'https://trading-company.vercel.app',
   'https://admin.wingzimpex.com',
   'https://adminserver.wingzimpex.com',
   'https://wingzimpex.com',
