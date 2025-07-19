@@ -1,3 +1,4 @@
+const SubCategory = require('../models/SubCategory');
 const Category = require('../models/Category');
 
 // Create a subcategory (must have a parent)
@@ -10,7 +11,7 @@ exports.createSubcategory = async (req, res) => {
     if (req.file) {
       data.image = req.file.path;
     }
-    const subcategory = new Category(data);
+    const subcategory = new SubCategory(data);
     await subcategory.save();
     res.status(201).json(subcategory);
   } catch (err) {
@@ -18,10 +19,10 @@ exports.createSubcategory = async (req, res) => {
   }
 };
 
-// Get all subcategories (categories with a parent)
+// Get all subcategories
 exports.getSubcategories = async (req, res) => {
   try {
-    const subcategories = await Category.find({ parent: { $ne: null } }).populate('parent').sort({ createdAt: -1 });
+    const subcategories = await SubCategory.find().populate('parent').sort({ createdAt: -1 });
     res.json(subcategories);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -31,7 +32,7 @@ exports.getSubcategories = async (req, res) => {
 // Get a single subcategory by ID
 exports.getSubcategory = async (req, res) => {
   try {
-    const subcategory = await Category.findOne({ _id: req.params.id, parent: { $ne: null } }).populate('parent');
+    const subcategory = await SubCategory.findById(req.params.id).populate('parent');
     if (!subcategory) return res.status(404).json({ error: 'Not found' });
     res.json(subcategory);
   } catch (err) {
@@ -49,11 +50,7 @@ exports.updateSubcategory = async (req, res) => {
     if (req.file) {
       data.image = req.file.path;
     }
-    const subcategory = await Category.findOneAndUpdate(
-      { _id: req.params.id, parent: { $ne: null } },
-      data,
-      { new: true }
-    );
+    const subcategory = await SubCategory.findByIdAndUpdate(req.params.id, data, { new: true });
     if (!subcategory) return res.status(404).json({ error: 'Not found' });
     res.json(subcategory);
   } catch (err) {
@@ -64,7 +61,7 @@ exports.updateSubcategory = async (req, res) => {
 // Delete a subcategory
 exports.deleteSubcategory = async (req, res) => {
   try {
-    const subcategory = await Category.findOneAndDelete({ _id: req.params.id, parent: { $ne: null } });
+    const subcategory = await SubCategory.findByIdAndDelete(req.params.id);
     if (!subcategory) return res.status(404).json({ error: 'Not found' });
     res.json({ message: 'Subcategory deleted' });
   } catch (err) {
@@ -79,7 +76,7 @@ exports.getNestedSubcategories = async (req, res) => {
     if (!parentId) {
       return res.status(400).json({ error: 'parentId query param is required.' });
     }
-    const subcategories = await Category.find({ parent: parentId }).lean();
+    const subcategories = await SubCategory.find({ parent: parentId }).lean();
     // Build a map for quick lookup
     const subcategoryMap = {};
     subcategories.forEach(cat => {
