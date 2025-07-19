@@ -69,7 +69,7 @@ const ProductForm: React.FC = () => {
           setProduct(res.data);
           setPreviewFeatured(res.data.featuredImage ? res.data.featuredImage : null);
           setExistingGallery(res.data.gallery ? res.data.gallery : []);
-          setPreviewGallery([]);
+          setPreviewGallery(res.data.gallery ? res.data.gallery : []);
         })
         .finally(() => setLoading(false));
     } else {
@@ -283,11 +283,17 @@ const ProductForm: React.FC = () => {
             <ImageUpload
               label="Featured Image"
               multiple={false}
-              value={featuredImageFile}
+              value={featuredImageFile || product.featuredImage || null}
               onChange={file => {
-                setFeaturedImageFile(file as File | null);
-                setPreviewFeatured(file ? URL.createObjectURL(file as File) : null);
-                setProduct(prev => ({ ...prev, featuredImage: '' })); // Clear featuredImage string if new file selected
+                if (file instanceof File) {
+                  setFeaturedImageFile(file);
+                  setPreviewFeatured(URL.createObjectURL(file));
+                  setProduct(prev => ({ ...prev, featuredImage: '' }));
+                } else {
+                  setFeaturedImageFile(null);
+                  setPreviewFeatured(file as string);
+                  setProduct(prev => ({ ...prev, featuredImage: file as string }));
+                }
               }}
             />
           </div>
@@ -295,15 +301,21 @@ const ProductForm: React.FC = () => {
             <ImageUpload
               label="Gallery Images"
               multiple={true}
-              value={galleryFiles}
+              value={galleryFiles.length > 0 ? galleryFiles : existingGallery}
               onChange={files => {
-                setGalleryFiles(files as File[]);
-                setPreviewGallery(Array.isArray(files) ? files.map(file => URL.createObjectURL(file)) : []);
-                setExistingGallery([]); // Clear existing gallery if new files selected
+                if (Array.isArray(files) && files.length > 0 && files[0] instanceof File) {
+                  setGalleryFiles(files as File[]);
+                  setPreviewGallery(files.map(file => URL.createObjectURL(file as File)));
+                  setExistingGallery([]);
+                } else {
+                  setGalleryFiles([]);
+                  setPreviewGallery(files as string[]);
+                  setExistingGallery(files as string[]);
+                }
               }}
             />
           </div>
-          <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Saving...' : 'Save Product'}</button>
+          <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? (id ? 'Updating...' : 'Saving...') : (id ? 'Update Product' : 'Save Product')}</button>
         </form>
       </div>
     </div>
