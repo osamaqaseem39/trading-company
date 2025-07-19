@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { serviceApi, Service, CreateServiceInput, UpdateServiceInput } from '../../services/api';
-import ImageUpload from '../../components/form/ImageUpload';
+
 
 // Upload a file to cPanel server and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
   const formData = new FormData();
   const ext = file.name.split('.').pop();
   const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  formData.append('file', file, uniqueName);
+  const response = await fetch('https://server.wingzimpex.com/upload.php', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await response.json();
+  if (data.url) {
+    return data.url;
+  } else {
+    throw new Error(data.error || 'Upload failed');
+  }
+}
+
+// Service-specific image upload
+async function uploadServiceImage(file: File): Promise<string> {
+  const formData = new FormData();
+  const ext = file.name.split('.').pop();
+  const uniqueName = `${Date.now()}-service-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
   const response = await fetch('https://server.wingzimpex.com/upload.php', {
     method: 'POST',
@@ -128,29 +146,33 @@ const ServiceForm: React.FC = () => {
           />
         </div>
         <div>
-          <ImageUpload
-            label="Featured Image"
-            multiple={false}
-            value={featuredImageFile instanceof File ? featuredImageFile : null}
-            onChange={file => {
-              const singleFile = Array.isArray(file) ? file[0] : file;
-              setFeaturedImageFile(singleFile as File | null);
-              setPreviewFeatured(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
-              setForm({ ...form, featuredImage: '' });
+          <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Featured Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              if (e.target.files && e.target.files[0]) {
+                const url = await uploadServiceImage(e.target.files[0]);
+                setFeaturedImageFile(null);
+                setPreviewFeatured(url);
+                setForm(prev => ({ ...prev, featuredImage: url }));
+              }
             }}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition"
           />
-          {!previewFeatured && form.featuredImage && (
-            <div className="relative inline-block">
-              <img src={form.featuredImage} alt="Current" className="h-32 mt-2 rounded" />
+          {previewFeatured && (
+            <div className="relative inline-block mt-2">
+              <img src={previewFeatured} alt="Preview" className="h-32 w-32 object-cover rounded border" />
               <button
                 type="button"
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
                 onClick={() => {
-                  setForm({ ...form, featuredImage: '' });
+                  setPreviewFeatured('');
+                  setForm(prev => ({ ...prev, featuredImage: '' }));
                 }}
                 title="Remove image"
               >
-                &times;
+                ×
               </button>
             </div>
           )}
