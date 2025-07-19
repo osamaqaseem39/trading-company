@@ -99,7 +99,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
       const uniqueName = `${Date.now()}-subcategory-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       formData.append('file', file, uniqueName);
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://server.wingzimpex.com/upload.php');
+      xhr.open('POST', 'https://admin.wingzimpex.com/uploads/upload.php');
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           setUploadProgress(Math.round((event.loaded / event.total) * 100));

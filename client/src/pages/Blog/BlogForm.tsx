@@ -7,22 +7,6 @@ interface BlogFormProps {
 }
 
 // Upload a file to cPanel server and return the public URL
-async function uploadToCpanel(file: File): Promise<string> {
-  const formData = new FormData();
-  const ext = file.name.split('.').pop();
-  const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-  formData.append('file', file, uniqueName);
-  const response = await fetch('https://server.wingzimpex.com/upload.php', {
-    method: 'POST',
-    body: formData,
-  });
-  const data = await response.json();
-  if (data.url) {
-    return data.url;
-  } else {
-    throw new Error(data.error || 'Upload failed');
-  }
-}
 
 // Blog-specific image upload
 async function uploadBlogImage(file: File): Promise<string> {
@@ -30,7 +14,7 @@ async function uploadBlogImage(file: File): Promise<string> {
   const ext = file.name.split('.').pop();
   const uniqueName = `${Date.now()}-blog-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
-  const response = await fetch('https://server.wingzimpex.com/upload.php', {
+  const response = await fetch('https://admin.wingzimpex.com/uploads/upload.php', {
     method: 'POST',
     body: formData,
   });

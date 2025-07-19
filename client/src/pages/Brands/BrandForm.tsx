@@ -18,7 +18,7 @@ function uploadBrandImage(file: File): Promise<string> {
     const uniqueName = `${Date.now()}-brand-${Math.random().toString(36).substring(2, 8)}.${ext}`;
     formData.append('file', file, uniqueName);
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://admin.wingzimpex.com/upload.php');
+    xhr.open('POST', 'https://admin.wingzimpex.com/uploads/upload.php');
     xhr.onload = () => {
       if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
