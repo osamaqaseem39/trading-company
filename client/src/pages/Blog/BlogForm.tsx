@@ -25,6 +25,24 @@ async function uploadToCpanel(file: File): Promise<string> {
   }
 }
 
+// Blog-specific image upload
+async function uploadBlogImage(file: File): Promise<string> {
+  const formData = new FormData();
+  const ext = file.name.split('.').pop();
+  const uniqueName = `${Date.now()}-blog-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  formData.append('file', file, uniqueName);
+  const response = await fetch('https://server.wingzimpex.com/upload.php', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await response.json();
+  if (data.url) {
+    return data.url;
+  } else {
+    throw new Error(data.error || 'Upload failed');
+  }
+}
+
 const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -124,7 +142,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
       const slug = generateSlug(formData.title);
       let featuredImageUrl = formData.featuredImage;
       if (featuredImageFile instanceof File) {
-        featuredImageUrl = await uploadToCpanel(featuredImageFile);
+        featuredImageUrl = await uploadBlogImage(featuredImageFile);
       }
       // Always set featuredImage, even if empty
       const payload = {

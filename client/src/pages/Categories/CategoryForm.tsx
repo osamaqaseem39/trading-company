@@ -63,7 +63,7 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
       setUploading(true);
       setUploadProgress(0);
       try {
-        const imageUrl = await uploadToCpanel(file);
+        const imageUrl = await uploadCategoryImage(file);
         setForm(prev => ({ ...prev, image: imageUrl }));
       } catch (err) {
         setError('Image upload failed');
@@ -85,7 +85,7 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     try {
       let imageUrl = form.image;
       if (form.image instanceof File) {
-        imageUrl = await uploadToCpanel(form.image);
+        imageUrl = await uploadCategoryImage(form.image);
       }
       const payload: any = {
         name: form.name,
@@ -110,12 +110,12 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
     }
   };
 
-  // Move uploadToCpanel inside the component to access setUploadProgress
-  const uploadToCpanel = (file: File): Promise<string> => {
+  // Category-specific image upload
+  const uploadCategoryImage = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       const ext = file.name.split('.').pop();
-      const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      const uniqueName = `${Date.now()}-category-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       formData.append('file', file, uniqueName);
       const xhr = new XMLHttpRequest();
       xhr.open('POST', 'https://server.wingzimpex.com/upload.php');

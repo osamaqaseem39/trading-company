@@ -71,7 +71,7 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
     try {
       let imageUrl = form.image;
       if (form.image instanceof File) {
-        imageUrl = await uploadToCpanel(form.image);
+        imageUrl = await uploadSubCategoryImage(form.image);
       }
       const payload: any = {
         name: form.name,
@@ -92,12 +92,12 @@ const SubCategoryForm: React.FC<{ mode?: SubCategoryFormMode }> = ({ mode }) => 
     }
   };
 
-  // Move uploadToCpanel inside the component to access setUploadProgress
-  const uploadToCpanel = (file: File): Promise<string> => {
+  // SubCategory-specific image upload
+  const uploadSubCategoryImage = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       const ext = file.name.split('.').pop();
-      const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      const uniqueName = `${Date.now()}-subcategory-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       formData.append('file', file, uniqueName);
       const xhr = new XMLHttpRequest();
       xhr.open('POST', 'https://server.wingzimpex.com/upload.php');

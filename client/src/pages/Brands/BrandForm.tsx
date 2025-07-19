@@ -11,21 +11,24 @@ const initialState = {
 
 type BrandFormMode = 'add' | 'edit';
 
-async function uploadToCpanel(file: File): Promise<string> {
+// Brand-specific image upload
+function uploadBrandImage(file: File): Promise<string> {
   const formData = new FormData();
   const ext = file.name.split('.').pop();
-  const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  const uniqueName = `${Date.now()}-brand-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
-  const response = await fetch('https://admin.wingzimpex.com/upload.php', {
+  return fetch('https://admin.wingzimpex.com/upload.php', {
     method: 'POST',
     body: formData,
-  });
-  const data = await response.json();
-  if (data.url) {
-    return data.url;
-  } else {
-    throw new Error(data.error || 'Upload failed');
-  }
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.url) {
+        return data.url;
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    });
 }
 
 const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
@@ -80,7 +83,7 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
     try {
       let imageUrl = '';
       if (form.image instanceof File) {
-        imageUrl = await uploadToCpanel(form.image);
+        imageUrl = await uploadBrandImage(form.image);
       } else if (typeof form.image === 'string') {
         imageUrl = form.image;
       }

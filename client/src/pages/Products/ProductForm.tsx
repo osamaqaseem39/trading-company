@@ -22,6 +22,24 @@ async function uploadToCpanel(file: File): Promise<string> {
   }
 }
 
+// Product-specific image upload
+async function uploadProductImage(file: File): Promise<string> {
+  const formData = new FormData();
+  const ext = file.name.split('.').pop();
+  const uniqueName = `${Date.now()}-product-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  formData.append('file', file, uniqueName);
+  const response = await fetch('https://server.wingzimpex.com/upload.php', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await response.json();
+  if (data.url) {
+    return data.url;
+  } else {
+    throw new Error(data.error || 'Upload failed');
+  }
+}
+
 // Add formatText and insertFormatting helpers (adapted from BlogForm)
 function formatText(text: string) {
   text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
@@ -151,12 +169,12 @@ const ProductForm: React.FC = () => {
     try {
       let featuredImageUrl = product.featuredImage;
       if (featuredImageFile) {
-        featuredImageUrl = await uploadToCpanel(featuredImageFile);
+        featuredImageUrl = await uploadProductImage(featuredImageFile);
       }
       let galleryUrls: string[] = [];
       if (galleryFiles.length > 0) {
         for (const file of galleryFiles) {
-          const url = await uploadToCpanel(file);
+          const url = await uploadProductImage(file);
           galleryUrls.push(url);
         }
       } else if (existingGallery.length > 0) {
