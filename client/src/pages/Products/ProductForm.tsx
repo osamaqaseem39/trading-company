@@ -3,13 +3,13 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { productApi, Product, brandApi, Brand, categoryApi, Category, subcategoryApi, SubCategory } from '../../services/api';
 
 
-// Upload a file to cPanel server and return the public URL
+// Upload a file to Vercel API and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
   const formData = new FormData();
   const ext = file.name.split('.').pop();
   const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
-  const response = await fetch('https://admin.wingzimpex.com/uploads/upload.php', {
+  const response = await fetch('/api/upload', {
     method: 'POST',
     body: formData,
   });
@@ -27,7 +27,7 @@ async function uploadProductImage(file: File): Promise<string> {
   const ext = file.name.split('.').pop();
   const uniqueName = `${Date.now()}-product-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   formData.append('file', file, uniqueName);
-  const response = await fetch('https://admin.wingzimpex.com/uploads/upload.php', {
+  const response = await fetch('/api/upload', {
     method: 'POST',
     body: formData,
   });
