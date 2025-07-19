@@ -8,6 +8,7 @@ interface ImageUploadProps {
   label?: string;
   maxSizeMB?: number;
   maxWidthOrHeight?: number;
+  name?: string;
 }
 
 const defaultOptions = {
@@ -23,6 +24,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   label = 'Upload Image',
   maxSizeMB,
   maxWidthOrHeight,
+  name,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -157,6 +159,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         multiple={multiple}
         onChange={handleChange}
         disabled={isUploading}
+        name={name}
         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
       />
       

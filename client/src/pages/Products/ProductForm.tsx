@@ -295,6 +295,7 @@ const ProductForm: React.FC = () => {
                   setProduct(prev => ({ ...prev, featuredImage: file as string }));
                 }
               }}
+              name="featuredImage"
             />
           </div>
           <div>
@@ -313,6 +314,7 @@ const ProductForm: React.FC = () => {
                   setExistingGallery(files as string[]);
                 }
               }}
+              name="gallery"
             />
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? (id ? 'Updating...' : 'Saving...') : (id ? 'Update Product' : 'Save Product')}</button>
