@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { blogApi, CreateBlogInput } from '../../services/api';
-import ImageUpload from '../../components/form/ImageUpload';
 
 interface BlogFormProps {
   mode: 'add' | 'edit';
@@ -298,29 +297,33 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode }) => {
         </div>
 
         <div>
-          <ImageUpload
-            label="Featured Image"
-            multiple={false}
-            value={featuredImageFile instanceof File ? featuredImageFile : null}
-            onChange={file => {
-              const singleFile = Array.isArray(file) ? file[0] : file;
-              setFeaturedImageFile(singleFile as File | null);
-              setPreviewFeatured(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
-              setFormData(prev => ({ ...prev, featuredImage: '' }));
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Featured Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              if (e.target.files && e.target.files[0]) {
+                const url = await uploadBlogImage(e.target.files[0]);
+                setFeaturedImageFile(null);
+                setPreviewFeatured(url);
+                setFormData(prev => ({ ...prev, featuredImage: url }));
+              }
             }}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition"
           />
-          {!previewFeatured && formData.featuredImage && (
-            <div className="relative inline-block">
-              <img src={formData.featuredImage} alt="Current" className="h-32 mt-2 rounded" />
+          {previewFeatured && (
+            <div className="relative inline-block mt-2">
+              <img src={previewFeatured} alt="Preview" className="h-32 w-32 object-cover rounded border" />
               <button
                 type="button"
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
                 onClick={() => {
+                  setPreviewFeatured('');
                   setFormData(prev => ({ ...prev, featuredImage: '' }));
                 }}
                 title="Remove image"
               >
-                &times;
+                ×
               </button>
             </div>
           )}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { categoryApi, Category } from '../../services/api';
-import ImageUpload from '../../components/form/ImageUpload';
 
 const initialState = {
   name: '',
@@ -123,15 +122,28 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
           if (data.url) {
+            setPreview(data.url);
+            setForm(prev => ({ ...prev, image: data.url }));
             resolve(data.url);
           } else {
+            setError(data.error || 'Upload failed');
             reject(new Error(data.error || 'Upload failed'));
           }
         } else {
+          setError('Upload failed');
           reject(new Error('Upload failed'));
         }
+        setUploading(false);
+        setUploadProgress(0);
       };
-      xhr.onerror = () => reject(new Error('Upload failed'));
+      xhr.onerror = () => {
+        setUploading(false);
+        setUploadProgress(0);
+        setError('Upload failed');
+        reject(new Error('Upload failed'));
+      };
+      setUploading(true);
+      setUploadProgress(0);
       xhr.send(formData);
     });
   };
@@ -151,18 +163,47 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
             <textarea name="description" value={form.description} onChange={handleChange} className="w-full border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition" rows={3} placeholder="Enter category description" />
           </div>
           <div>
-            <ImageUpload
-              label="Image"
-              multiple={false}
-              value={form.image instanceof File ? form.image : null}
-              onChange={file => {
-                const singleFile = Array.isArray(file) ? file[0] : file;
-                setForm(prev => ({ ...prev, image: singleFile || null }));
-                setPreview(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
+            <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                if (e.target.files && e.target.files[0]) {
+                  await uploadCategoryImage(e.target.files[0]);
+                }
               }}
+              disabled={uploading}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            {form.image instanceof File && preview && (
-              <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow mt-2" />
+            {uploading && (
+              <div className="mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                  <div
+                    className="bg-brand-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {uploadProgress < 100 ? 'Processing image...' : 'Upload complete!'}
+                </p>
+              </div>
+            )}
+            {form.image && (
+              <div className="relative inline-block mt-2">
+                <img
+                  src={form.image as string}
+                  alt="Preview"
+                  className="h-32 w-32 object-cover rounded border"
+                />
+                <button
+                  type="button"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
+                  onClick={() => setForm(prev => ({ ...prev, image: null }))}
+                  title="Remove image"
+                >
+                  ×
+                </button>
+              </div>
             )}
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading || uploading}>

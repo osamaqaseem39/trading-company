@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { brandApi, Brand } from '../../services/api';
-import ImageUpload from '../../components/form/ImageUpload';
 
 const initialState = {
   name: '',
@@ -13,22 +12,28 @@ type BrandFormMode = 'add' | 'edit';
 
 // Brand-specific image upload
 function uploadBrandImage(file: File): Promise<string> {
-  const formData = new FormData();
-  const ext = file.name.split('.').pop();
-  const uniqueName = `${Date.now()}-brand-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-  formData.append('file', file, uniqueName);
-  return fetch('https://admin.wingzimpex.com/upload.php', {
-    method: 'POST',
-    body: formData,
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.url) {
-        return data.url;
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    const ext = file.name.split('.').pop();
+    const uniqueName = `${Date.now()}-brand-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+    formData.append('file', file, uniqueName);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://admin.wingzimpex.com/upload.php');
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        if (data.url) {
+          resolve(data.url);
+        } else {
+          reject(new Error(data.error || 'Upload failed'));
+        }
       } else {
-        throw new Error(data.error || 'Upload failed');
+        reject(new Error('Upload failed'));
       }
-    });
+    };
+    xhr.onerror = () => reject(new Error('Upload failed'));
+    xhr.send(formData);
+  });
 }
 
 const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
@@ -119,18 +124,35 @@ const BrandForm: React.FC<{ mode?: BrandFormMode }> = ({ mode }) => {
             <textarea name="description" value={form.description} onChange={handleChange} className="w-full border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition" rows={3} placeholder="Enter brand description" />
           </div>
           <div>
-            <ImageUpload
-              label="Image"
-              multiple={false}
-              value={form.image instanceof File ? form.image : null}
-              onChange={file => {
-                const singleFile = Array.isArray(file) ? file[0] : file;
-                setForm(prev => ({ ...prev, image: singleFile || null }));
-                setPreview(singleFile instanceof File ? URL.createObjectURL(singleFile) : null);
+            <label className="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                if (e.target.files && e.target.files[0]) {
+                  const url = await uploadBrandImage(e.target.files[0]);
+                  setForm(prev => ({ ...prev, image: url }));
+                  setPreview(url);
+                }
               }}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition"
             />
-            {form.image instanceof File && preview && (
-              <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow mt-2" />
+            {form.image && (
+              <div className="relative inline-block mt-2">
+                <img
+                  src={form.image as string}
+                  alt="Preview"
+                  className="h-32 w-32 object-cover rounded border"
+                />
+                <button
+                  type="button"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
+                  onClick={() => setForm(prev => ({ ...prev, image: null }))}
+                  title="Remove image"
+                >
+                  ×
+                </button>
+              </div>
             )}
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Saving...' : isEdit ? 'Update Brand' : 'Add Brand'}</button>

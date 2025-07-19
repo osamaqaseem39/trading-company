@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { productApi, Product, brandApi, Brand, categoryApi, Category, subcategoryApi, SubCategory } from '../../services/api';
-import imageCompression from 'browser-image-compression';
-import ImageUpload from '../../components/form/ImageUpload';
+
 
 // Upload a file to cPanel server and return the public URL
 async function uploadToCpanel(file: File): Promise<string> {
@@ -298,42 +297,77 @@ const ProductForm: React.FC = () => {
             </div>
           )}
           <div>
-            <ImageUpload
-              label="Featured Image"
-              multiple={false}
-              value={featuredImageFile || product.featuredImage || null}
-              onChange={file => {
-                if (file instanceof File) {
-                  setFeaturedImageFile(file);
-                  setPreviewFeatured(URL.createObjectURL(file));
-                  setProduct(prev => ({ ...prev, featuredImage: '' }));
-                } else {
+            <label className="block font-semibold mb-1">Featured Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                if (e.target.files && e.target.files[0]) {
+                  const url = await uploadProductImage(e.target.files[0]);
                   setFeaturedImageFile(null);
-                  setPreviewFeatured(file as string);
-                  setProduct(prev => ({ ...prev, featuredImage: file as string }));
+                  setPreviewFeatured(url);
+                  setProduct(prev => ({ ...prev, featuredImage: url }));
                 }
               }}
-              name="featuredImage"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition"
             />
+            {previewFeatured && (
+              <div className="relative inline-block mt-2">
+                <img src={previewFeatured} alt="Preview" className="h-32 w-32 object-cover rounded border" />
+                <button
+                  type="button"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
+                  onClick={() => {
+                    setPreviewFeatured('');
+                    setProduct(prev => ({ ...prev, featuredImage: '' }));
+                  }}
+                  title="Remove image"
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </div>
           <div>
-            <ImageUpload
-              label="Gallery Images"
-              multiple={true}
-              value={galleryFiles.length > 0 ? galleryFiles : existingGallery}
-              onChange={files => {
-                if (Array.isArray(files) && files.length > 0 && files[0] instanceof File) {
-                  setGalleryFiles(files as File[]);
-                  setPreviewGallery(files.map(file => URL.createObjectURL(file as File)));
-                  setExistingGallery([]);
-                } else {
-                  setGalleryFiles([]);
-                  setPreviewGallery(files as string[]);
-                  setExistingGallery(files as string[]);
+            <label className="block font-semibold mb-1">Gallery Images</label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={async (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  const urls: string[] = [];
+                  for (let i = 0; i < e.target.files.length; i++) {
+                    const url = await uploadProductImage(e.target.files[i]);
+                    urls.push(url);
+                  }
+                  setPreviewGallery(urls);
+                  setProduct(prev => ({ ...prev, gallery: urls }));
                 }
               }}
-              name="gallery"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition"
             />
+            {previewGallery && previewGallery.length > 0 && (
+              <div className="flex gap-2 flex-wrap mt-2">
+                {previewGallery.map((img, idx) => (
+                  <div key={idx} className="relative inline-block">
+                    <img src={img} alt={`Gallery ${idx}`} className="h-20 w-20 object-cover rounded border" />
+                    <button
+                      type="button"
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
+                      onClick={() => {
+                        const newGallery = previewGallery.filter((_, i) => i !== idx);
+                        setPreviewGallery(newGallery);
+                        setProduct(prev => ({ ...prev, gallery: newGallery }));
+                      }}
+                      title="Remove image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-bold text-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? (id ? 'Updating...' : 'Saving...') : (id ? 'Update Product' : 'Save Product')}</button>
         </form>
