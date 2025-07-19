@@ -11,9 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// ...rest of your code...
+$allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+$max_size = 5 * 1024 * 1024; // 5MB
+
 if(isset($_FILES['file'])){
     $file = $_FILES['file'];
+    // Validate file type
+    if (!in_array($file['type'], $allowed_types)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.']);
+        exit();
+    }
+    // Validate file size
+    if ($file['size'] > $max_size) {
+        http_response_code(400);
+        echo json_encode(['error' => 'File too large. Maximum allowed size is 5MB.']);
+        exit();
+    }
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     $uniqueName = time() . '-' . bin2hex(random_bytes(4)) . '.' . $ext;
     $upload_dir = 'uploads/';
