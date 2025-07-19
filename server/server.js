@@ -27,7 +27,6 @@ const allowedOrigins = [
   'https://trading-company.vercel.app',
   'https://admin.wingzimpex.com',
   'https://adminserver.wingzimpex.com',
-  'https://admin.wingzimpex.com',
   'https://wingzimpex.com',
   'https://trading-company-website.vercel.app',
   'https://www.wingzimpex.com'
