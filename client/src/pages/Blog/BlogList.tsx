@@ -83,15 +83,15 @@ const BlogList: React.FC = () => {
     <div className="w-full p-4">
       <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold" style={{ color: '#2d2d2d' }}>Blog Posts</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#062373' }}>Blog Posts</h1>
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search by title..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
-              style={{ color: '#2d2d2d' }}
+              className="border rounded px-3 py-2 w-full md:w-64 text-[#062373]"
+              style={{ color: '#062373' }}
             />
             <Link
               to="/blog/add"
@@ -102,14 +102,14 @@ const BlogList: React.FC = () => {
           </div>
         </div>
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" style={{ color: '#2d2d2d' }}>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" style={{ color: '#062373' }}>
             {error}
           </div>
         )}
         {sorted.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#2d2d2d]">
-              <thead className="text-[#2d2d2d]">
+            <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#062373]">
+              <thead className="text-[#062373]">
                 <tr className="bg-gray-100">
                   <th className="px-4 py-2 border">Image</th>
                   <th className="px-4 py-2 border cursor-pointer" onClick={() => handleSort('title')}>
@@ -119,7 +119,7 @@ const BlogList: React.FC = () => {
                   <th className="px-4 py-2 border">Actions</th>
                 </tr>
               </thead>
-              <tbody className="text-[#2d2d2d]">
+              <tbody className="text-[#062373]">
                 {sorted.map((blog) => (
                   <tr key={blog._id} className="border-t">
                     <td className="px-4 py-2 border">
@@ -160,7 +160,7 @@ const BlogList: React.FC = () => {
             </table>
           </div>
         ) : (
-          <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>No blog posts found.</div>
+          <div className="flex justify-center items-center h-64" style={{ color: '#062373' }}>No blog posts found.</div>
         )}
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} isFullscreen={false}>
           {modalImg && (

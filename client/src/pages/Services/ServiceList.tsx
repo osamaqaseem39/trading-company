@@ -58,14 +58,14 @@ const ServiceList: React.FC = () => {
     <div className="w-full p-4">
       <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold" style={{ color: '#2d2d2d' }}>Services</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#062373' }}>Services</h1>
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search by title..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
+              className="border rounded px-3 py-2 w-full md:w-64 text-[#062373]"
               style={{ color: '#2d2d2d' }}
             />
             <Link to="/services/add" className="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 transition">Add Service</Link>

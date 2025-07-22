@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { productApi, Product } from '../../services/api';
+import { productApi, Product, brandApi, Brand } from '../../services/api';
 import { Modal } from '../../components/ui/modal';
 
 const ProductList: React.FC = () => {
@@ -11,6 +11,8 @@ const ProductList: React.FC = () => {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<'title' | 'brand' | ''>('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [brandMap, setBrandMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
     productApi.getAll()
@@ -21,6 +23,18 @@ const ProductList: React.FC = () => {
         setProducts([]);
       })
       .finally(() => setLoading(false));
+    // Fetch brands
+    brandApi.getAll()
+      .then(res => {
+        setBrands(Array.isArray(res.data) ? res.data : []);
+        setBrandMap(
+          (Array.isArray(res.data) ? res.data : []).reduce((acc, b) => {
+            acc[b._id] = b.name;
+            return acc;
+          }, {} as Record<string, string>)
+        );
+      })
+      .catch(() => setBrands([]));
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -62,26 +76,26 @@ const ProductList: React.FC = () => {
     <div className="w-full p-4">
       <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-extrabold" style={{ color: '#2d2d2d' }}>Products</h1>
+          <h1 className="text-3xl font-extrabold" style={{ color: '#062373' }}>Products</h1>
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search by name..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border rounded px-3 py-2 w-full md:w-64 text-[#2d2d2d]"
-              style={{ color: '#2d2d2d' }}
+              className="border rounded px-3 py-2 w-full md:w-64 text-[#062373]"
+              style={{ color: '#062373' }}
             />
             <Link to="/products/add" className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-bold text-lg shadow">Add Product</Link>
           </div>
         </div>
         {loading ? (
-          <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>Loading...</div>
+          <div className="flex justify-center items-center h-64" style={{ color: '#062373' }}>Loading...</div>
         ) : (
           sorted.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#2d2d2d]">
-                <thead className="text-[#2d2d2d]">
+              <table className="min-w-full w-full border border-gray-200 rounded-lg text-[#062373]">
+                <thead className="text-[#062373]">
                   <tr className="bg-gray-100">
                     <th className="px-4 py-2 border">Image</th>
                     <th className="px-4 py-2 border cursor-pointer" onClick={() => handleSort('title')}>
@@ -94,7 +108,7 @@ const ProductList: React.FC = () => {
                     <th className="px-4 py-2 border">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="text-[#2d2d2d]">
+                <tbody className="text-[#062373]">
                   {sorted.map(product => (
                     <tr key={product._id} className="border-t">
                       <td className="px-4 py-2 border">
@@ -108,7 +122,7 @@ const ProductList: React.FC = () => {
                         )}
                       </td>
                       <td className="px-4 py-2 border font-medium">{product.title}</td>
-                      <td className="px-4 py-2 border">{product.brand || '-'}</td>
+                      <td className="px-4 py-2 border">{brandMap[product.brand as string] || '-'}</td>
                       <td className="px-4 py-2 border max-w-xs truncate">{product.description}</td>
                       <td className="px-4 py-2 border">
                         <Link to={`/products/${product._id}`} className="px-3 py-1 rounded font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200 transition mr-2">View</Link>
@@ -121,7 +135,7 @@ const ProductList: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="flex justify-center items-center h-64" style={{ color: '#2d2d2d' }}>No products found.</div>
+            <div className="flex justify-center items-center h-64" style={{ color: '#062373' }}>No products found.</div>
           )
         )}
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} isFullscreen={false}>
