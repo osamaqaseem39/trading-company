@@ -112,7 +112,7 @@ const CategoryForm: React.FC<{ mode?: CategoryFormMode }> = ({ mode }) => {
       const uniqueName = `${Date.now()}-category-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       formData.append('file', file, uniqueName);
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://osamaqaseem.online/upload.php');
+      xhr.open('POST', 'https://wingzimpex.osamaqaseem.online/upload.php');
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           setUploadProgress(Math.round((event.loaded / event.total) * 100));
