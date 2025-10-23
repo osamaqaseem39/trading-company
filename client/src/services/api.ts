@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://adminserver.wingzimpex.com/api';
+const UPLOAD_URL = 'https://wingzimpex.osamaqaseem.online/upload.php';
+
+export { BASE_URL, UPLOAD_URL };
 
 // Add auth token to requests if it exists
 axios.interceptors.request.use((config) => {
